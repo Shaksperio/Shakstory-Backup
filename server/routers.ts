@@ -6,8 +6,7 @@ import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
 import { TRPCError } from "@trpc/server";
 import { getEditorialRepository, getEditorialRepositoryMode } from "./data-access";
 import { RepositoryConflictError } from "../backend/src/repositories/types";
-import { analyzeLiteraryText, literaryAnalysisInputSchema } from "./literary-analysis";
-import { listLLMModels } from "./_core/llm";
+import { analyzeLiteraryText, listLiteraryModels, literaryAnalysisInputSchema } from "./literary-analysis";
 import { getSyncSnapshot, markSyncConflict, markSyncFailed, markSyncStarted, markSyncSucceeded } from "./sync-state";
 
 const documentPath = z.string().regex(/^[a-z0-9][a-z0-9/_-]*\.json$/i, "Caminho de documento inválido.");
@@ -25,7 +24,7 @@ export const appRouter = router({
   }),
   literaryAssist: router({
     models: protectedProcedure.query(async () => {
-      const result = await listLLMModels();
+      const result = await listLiteraryModels();
       return { models: result.data };
     }),
     analyze: protectedProcedure.input(literaryAnalysisInputSchema).mutation(async ({ input }) => {

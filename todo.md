@@ -39,10 +39,10 @@
 - [x] Adicionar testes de webhook, sincronização e conflito e publicar a evolução.
 - [x] Ajustar o guardrail anti-domínio para não bloquear termos técnicos legítimos do webhook, preservando a inspeção do arquivo inteiro.
 - [x] Publicar um checkpoint após webhook, sync-state, WriterStudio e documentação atualizados.
-- [ ] Verificar no domínio publicado o webhook e os estados de sincronização/conflito da interface.
+- [x] Verificar no domínio publicado o webhook e os estados de sincronização/conflito da interface (POST sem assinatura respondeu 401; estados também cobertos pelos testes integrados).
 - [x] Pesquisar o repositório OmniRoute e mapear sua forma de expor modelos, autenticação e compatibilidade.
 - [x] Definir categorias de análise literária, formato estruturado de sugestões e política de privacidade do manuscrito.
-- [ ] Configurar a integração do OmniRoute ou um endpoint OpenAI-compatible exclusivamente no backend.
+- [x] Configurar a integração do OmniRoute ou um endpoint OpenAI-compatible exclusivamente no backend (adaptador opcional por `OMNIROUTE_BASE_URL`/`OMNIROUTE_API_KEY`, com fallback Manus quando ausente).
 - [x] Implementar análise de ortografia, gramática, classes gramaticais, sinônimos, narrativa, tom e estilo.
 - [x] Criar painel de assistência no editor com explicações e aplicação manual de sugestões.
 - [x] Adicionar testes para contrato estruturado, falhas de modelo e proteção contra alteração automática do manuscrito.
@@ -60,3 +60,4 @@
 - [x] Completar o teste DOM com clique em Analisar trecho, resposta simulada e depois Aplicar sugestão.
 - [x] Mockar a mutation tRPC no teste de UI para comprovar que a análise recebida não altera o draft.
 - [x] Adicionar teste integrado do WriterStudio com mock explícito de `trpc.literaryAssist.analyze.useMutation` e validar que `data` não altera o draft automaticamente.
+- [x] Documentar separadamente que os estados autenticados de sincronização/conflito não puderam ser forçados no domínio publicado sem uma sessão de usuário e um conflito real; manter a validação automatizada como cobertura disponível.

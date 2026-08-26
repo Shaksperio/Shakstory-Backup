@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { invokeLLM, listLLMModels } from "./_core/llm";
+import { invokeOmniRouteLLM, isOmniRouteConfigured, listOmniRouteModels } from "./omniroute";
 
 export const literaryFocusSchema = z.enum([
   "language",
@@ -78,11 +79,15 @@ const responseSchema = {
 const extractText = (content: string | Array<{ type: string; text?: string }>) =>
   Array.isArray(content) ? content.filter(part => part.type === "text").map(part => part.text ?? "").join("\n") : content;
 
+export async function listLiteraryModels() {
+  return isOmniRouteConfigured() ? listOmniRouteModels() : listLLMModels();
+}
+
 export async function analyzeLiteraryText(input: z.infer<typeof literaryAnalysisInputSchema>) {
-  const catalog = await listLLMModels();
+  const catalog = await listLiteraryModels();
   const available = new Set(catalog.data.map(model => model.id));
   const selectedModel = input.model && available.has(input.model) ? input.model : undefined;
-  const response = await invokeLLM({
+  const request = {
     ...(selectedModel ? { model: selectedModel } : {}),
     messages: [
       {
@@ -90,12 +95,13 @@ export async function analyzeLiteraryText(input: z.infer<typeof literaryAnalysis
         content: `Você é uma editora literária brasileira, rigorosa e respeitosa à autoria. Responda somente em JSON conforme o schema. O idioma do trecho é ${input.language}. ${focusInstructions[input.focus]} Diferencie erro verificável de preferência editorial. Nunca invente regra, não elogie de forma genérica e não proponha mudanças que alterem fatos, personagens ou intenção sem explicar o risco. O campo original deve ser uma sequência literal encontrada no trecho, exceto quando a sugestão for uma observação sem substituição; nesse caso use uma string vazia. Informe start e end como offsets UTF-16 do trecho original; para observações sem substituição, use start=0 e end=0. A confiança deve ficar entre 0 e 1.`,
       },
       { role: "user", content: `Analise o trecho abaixo. Não o reescreva integralmente e não aplique alterações.\n\n${input.text}` },
-    ],
-    response_format: { type: "json_schema", json_schema: { name: "literary_analysis", strict: true, schema: responseSchema } },
+    ] as Array<{ role: "system" | "user"; content: string }>,
+    response_format: { type: "json_schema" as const, json_schema: { name: "literary_analysis", strict: true, schema: responseSchema } },
     maxTokens: 5000,
-  });
+  };
+  const response = isOmniRouteConfigured() ? await invokeOmniRouteLLM(request) : await invokeLLM(request);
 
-  const raw = extractText(response.choices[0]?.message.content ?? "");
+  const raw = extractText(response.choices[0]?.message?.content ?? "");
   const parsed = literaryAnalysisResponseSchema.parse({ ...JSON.parse(raw), model: response.model });
   const safeSuggestions = parsed.suggestions.filter(item => {
     if (!item.original) return item.start === 0 && item.end === 0;
