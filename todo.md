@@ -7,7 +7,7 @@
 - [x] Preparar o adaptador de persistência versionada e o controle de concorrência por versão/SHA.
 - [x] Atualizar README, variáveis de ambiente, instruções de instalação, validação, backup, restauração e deploy para o Shakstory.
 - [x] Validar que nenhum arquivo, dado ou nomenclatura de orçamento de pintura foi incorporado ao editor.
-- [ ] Verificar a integração final com o repositório GitHub privado sem expor tokens, credenciais ou secrets.
+- [x] Verificar a integração final com o repositório GitHub privado sem expor tokens, credenciais ou secrets.
 - [x] Corrigir o validador de dados para ignorar diretórios ao percorrer o manifesto e os arquivos JSON.
 - [x] Criar exemplos mínimos de dados editoriais válidos em `data/` compatíveis com os schemas.
 - [x] Conectar a camada de repositórios aos serviços reais do app sem expor o GitHub ao frontend.
@@ -15,12 +15,19 @@
 - [x] Expandir a validação anti-domínio para código, documentação e nomes de arquivos, removendo referências remanescentes ao domínio de pintura.
 - [x] Implementar GitHub OAuth com início de autorização, callback publicado e proteção contra CSRF/state.
 - [x] Adicionar secrets do GitHub OAuth e documentar a configuração no GitHub.
-- [x] Testar o fluxo OAuth sem expor client secret, access token ou dados de sessão.
+- [x] Testar o fluxo OAuth sem expor client secret, access token ou dados de sessão; token Fine-grained validado via API GitHub.
 - [x] Conectar getEditorialRepository() a uma leitura e gravação efetivas de documentos editoriais.
-- [ ] Publicar e validar no domínio permanente que `/api/github/oauth/start` redireciona ao GitHub.
+- [x] Publicar e validar no domínio permanente que `/api/github/oauth/start` redireciona ao GitHub.
 - [x] Adicionar teste de integração OAuth com mocks para callback, token e identidade GitHub.
 - [x] Corrigir o validador abrangente para não tentar ler diretórios como arquivos.
 - [x] Expandir o validador do repositório para scripts, package e demais arquivos relevantes, documentando exceções estritamente necessárias.
 - [x] Remover ou justificar formalmente referências técnicas restantes sem mascará-las por exclusão do verificador.
 - [x] Validar os próprios scripts de verificação com allowlist linha a linha, sem ignorar arquivos inteiros.
 - [x] Documentar formalmente as linhas técnicas permitidas nos guardrails de validação.
+- [x] Preparar a ficha de configuração do GitHub App com URLs, permissões mínimas e eventos desativados por padrão.
+- [x] Diferenciar no projeto o fluxo de instalação do GitHub App do fluxo OAuth App já implementado.
+- [x] Adicionar secrets separados para App ID, App name, owner, repository, Client ID, Client Secret e Private Key do GitHub App.
+- [x] Separar e documentar os dados do GitHub App sem misturá-los com GITHUB_OAUTH_CLIENT_ID e GITHUB_OAUTH_CLIENT_SECRET; a validação operacional permanece opcional e desativada.
+- [x] Tornar o token Fine-grained GITHUB_TOKEN o mecanismo operacional principal de sincronização.
+- [x] Documentar a Private Key do GitHub App como configuração opcional não utilizada no fluxo atual.
+- [x] Remover o teste obrigatório da Private Key do GitHub App da suíte padrão e manter apenas a validação do token ativo.

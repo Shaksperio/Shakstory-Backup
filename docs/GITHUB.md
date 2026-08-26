@@ -11,7 +11,9 @@ GITHUB_REPOSITORY=
 GITHUB_BRANCH=main
 ```
 
-`GITHUB_TOKEN` é obrigatório apenas quando a sincronização versionada estiver habilitada. Ele deve possuir o menor conjunto de permissões possível para o repositório privado. As demais variáveis identificam o destino e não são credenciais, mas continuam sendo configuradas somente no ambiente do backend.
+`GITHUB_TOKEN` é o mecanismo operacional principal da sincronização versionada. O token ativo foi validado contra a API do GitHub e deve permanecer Fine-grained, restrito a `Shaksperio/Shakstory`, com `Contents: Read and write` e `Metadata: Read-only`. As demais variáveis identificam o destino e não são credenciais, mas continuam sendo configuradas somente no ambiente do backend.
+
+A autenticação nativa por GitHub App (`GITHUB_APP_ID`, `GITHUB_APP_PRIVATE_KEY` e campos relacionados) é opcional e não participa do fluxo atual. Ela não deve ser tratada como obrigatória enquanto a Private Key não estiver validada; não é necessário conceder permissões de conta, organização ou enterprise.
 
 ## Fluxo de persistência
 
@@ -35,4 +37,4 @@ O fluxo usa `state`, PKCE (`S256`) e cookies `HttpOnly`/`Secure`. O Client ID e 
 gh repo create shakstory --private --source=. --remote=github --push
 ```
 
-Antes do comando, verifique o conteúdo com `pnpm check`, `pnpm test`, `pnpm validate:data` e `git diff --check`. Nunca use `git add .env`, arquivos de sessão, tokens ou dumps não autorizados.
+Antes do comando, verifique o conteúdo com `pnpm check`, `pnpm test`, `pnpm validate:data` e `git diff --check`. O repositório `Shaksperio/Shakstory` já recebeu o branch `main` usando o token Fine-grained. Nunca use `git add` para arquivos de ambiente, arquivos de sessão, tokens ou dumps não autorizados.
