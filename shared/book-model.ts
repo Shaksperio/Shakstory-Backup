@@ -2,7 +2,8 @@ export type SemanticBlock = { id: string; kind: "paragraph" | "quote" | "scene_b
 export type SemanticScene = { id: string; title: string; blocks: SemanticBlock[]; characterIds: string[]; locationIds: string[]; sortOrder: number };
 export type SemanticChapter = { id: string; title: string; scenes: SemanticScene[]; sortOrder: number };
 export type SemanticPart = { id: string; title: string; chapters: SemanticChapter[]; sortOrder: number };
-export type SemanticBook = { schemaVersion: "1.1"; id: string; title: string; parts: SemanticPart[]; migratedFromLegacy: boolean };
+export type SemanticPlannedScene = { id: string; title: string; objective: string; conflict: string; notes: string };
+export type SemanticBook = { schemaVersion: "1.1"; id: string; title: string; parts: SemanticPart[]; migratedFromLegacy: boolean; plannedScenes?: SemanticPlannedScene[] };
 export type LegacyNode = { id: string; title: string; kind: "part" | "chapter" | "scene" | "front_matter" | "back_matter"; content: string; sortOrder?: number };
 
 const splitBlocks = (content: string): SemanticBlock[] => content.split(/\n{2,}/).map(text => text.trim()).filter(Boolean).map((text, index) => ({ id: `block_${index + 1}`, kind: "paragraph", text, sortOrder: index }));
@@ -22,7 +23,7 @@ export function migrateLegacyNodes(input: { id: string; title: string; nodes: Le
     currentPart.chapters.push(chapter);
   }
   if (currentPart.chapters.length > 0 || parts.length === 0) parts.push(currentPart);
-  return { schemaVersion: "1.1", id: input.id, title: input.title, parts, migratedFromLegacy: true };
+  return { schemaVersion: "1.1", id: input.id, title: input.title, parts, migratedFromLegacy: true, plannedScenes: [] };
 }
 
 export function semanticWordCount(book: SemanticBook): number {

@@ -35,22 +35,31 @@ describe("WriterStudio integrated literary assistance", () => {
     fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
     expect(await screen.findByText("Projeto do livro")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
-    const editor = await screen.findByPlaceholderText("Comece onde a história pede.");
-    await waitFor(() => expect((editor as HTMLTextAreaElement).value).toBe("A noite caiu."));
+    const editor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
+    await waitFor(() => expect(editor.textContent).toBe("A noite caiu."));
 
     fireEvent.click(screen.getByRole("button", { name: "Analisar trecho" }));
     await waitFor(() => expect(screen.getByText("A imagem inicial é clara.")).toBeTruthy());
-    expect((editor as HTMLTextAreaElement).value).toBe("A noite caiu.");
+    expect(editor.textContent).toBe("A noite caiu.");
 
     fireEvent.click(screen.getByRole("button", { name: "Aplicar sugestão" }));
-    expect((editor as HTMLTextAreaElement).value).toBe("A tarde caiu.");
+    expect(editor.textContent).toBe("A tarde caiu.");
+
+    fireEvent.input(editor, { target: { textContent: "A tarde caiu. A cidade acordou." } });
+    await new Promise(resolve => setTimeout(resolve, 950));
+    const bibliotecaButtons = screen.getAllByRole("button", { name: "Biblioteca" });
+    fireEvent.click(bibliotecaButtons[bibliotecaButtons.length - 1]);
+    fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
+    const reopenedEditor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
+    expect(reopenedEditor.textContent).toBe("A tarde caiu. A cidade acordou.");
 
     fireEvent.click(screen.getByRole("button", { name: "Projeto" }));
     expect(await screen.findByText("Projeto do livro")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Planejar" }));
     expect(await screen.findByText("Seu projeto, antes das páginas.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
-    expect(await screen.findByPlaceholderText("Comece onde a história pede.")).toBeTruthy();
+    expect(await screen.findByRole("textbox", { name: "Editar bloco 1" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Preparar" }));
     expect(await screen.findByText("Preparação editorial")).toBeTruthy();
   });
