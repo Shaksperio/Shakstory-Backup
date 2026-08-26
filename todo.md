@@ -1,10 +1,15 @@
 
-- [ ] Analisar o segundo anexo e separar sua estrutura reutilizável dos exemplos de orçamento de pintura.
-- [ ] Documentar a arquitetura do Shakstory com frontend, backend, repositório de dados e versionamento no GitHub.
-- [ ] Criar contratos JSON e schemas versionáveis para livros, manuscritos, nós narrativos, planejamento, metas, timeline, versões e ativos visuais.
-- [ ] Criar manifesto da base e exemplos de dados editoriais sem dados fictícios de clientes, avaliações ou depoimentos.
-- [ ] Isolar o acesso a dados atrás de uma camada de repositório, sem o frontend conversar diretamente com o GitHub.
-- [ ] Preparar o adaptador de persistência versionada e o controle de concorrência por versão/SHA.
-- [ ] Atualizar README, variáveis de ambiente, instruções de instalação, validação, backup, restauração e deploy para o Shakstory.
-- [ ] Validar que nenhum arquivo, dado ou nomenclatura de orçamento de pintura foi incorporado ao editor.
+- [x] Analisar o segundo anexo e separar sua estrutura reutilizável dos exemplos de orçamento de pintura.
+- [x] Documentar a arquitetura do Shakstory com frontend, backend, repositório de dados e versionamento no GitHub.
+- [x] Criar contratos JSON e schemas versionáveis específicos para livros, manuscritos, nós narrativos, planejamento, metas, timeline, versões e ativos visuais.
+- [x] Criar manifesto da base e exemplos de dados editoriais sem dados fictícios de clientes, avaliações ou depoimentos.
+- [x] Isolar o acesso a dados atrás de uma camada de repositório, sem o frontend conversar diretamente com o GitHub.
+- [x] Preparar o adaptador de persistência versionada e o controle de concorrência por versão/SHA.
+- [x] Atualizar README, variáveis de ambiente, instruções de instalação, validação, backup, restauração e deploy para o Shakstory.
+- [x] Validar que nenhum arquivo, dado ou nomenclatura de orçamento de pintura foi incorporado ao editor.
 - [ ] Verificar a integração final com o repositório GitHub privado sem expor tokens, credenciais ou secrets.
+- [x] Corrigir o validador de dados para ignorar diretórios ao percorrer o manifesto e os arquivos JSON.
+- [ ] Criar exemplos mínimos de dados editoriais válidos em `data/` compatíveis com os schemas.
+- [ ] Conectar a camada de repositórios aos serviços reais do app sem expor o GitHub ao frontend.
+- [ ] Adicionar `.env.example` e documentação explícita de deploy e restore em ambiente limpo.
+- [ ] Expandir a validação anti-domínio para código, documentação e nomes de arquivos, removendo referências remanescentes ao domínio de pintura.
