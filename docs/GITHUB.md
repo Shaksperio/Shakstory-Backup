@@ -21,6 +21,12 @@ A API valida o payload, agrupa alterações do autosave e publica documentos ind
 
 O GitHub não é usado como banco de dados de baixa latência nem recebe um commit a cada tecla. O banco operacional mantém a interação rápida; JSON/GitHub representa persistência versionada, auditoria e backup.
 
+## Webhook de sincronização
+
+Quando o GitHub App estiver configurado para receber eventos, use `https://shakstory-cpuxtpcc.manus.space/api/github/webhook` como Webhook URL. Ative apenas o evento mínimo necessário para a estratégia adotada e salve um segredo aleatório longo como `GITHUB_WEBHOOK_SECRET`; o mesmo valor deve ser cadastrado no GitHub e no ambiente do backend. O endpoint valida `X-Hub-Signature-256` com comparação em tempo constante e responde imediatamente a eventos válidos. O frontend não recebe o segredo.
+
+O painel do editor diferencia `Sincronizando`, `Sincronizado`, `Somente local` e `Conflito`. Um conflito de SHA nunca substitui o documento remoto silenciosamente: o autor deve recarregar e revisar antes de tentar novamente.
+
 ## GitHub OAuth
 
 Para o OAuth App do GitHub, use como **Authorization callback URL**:

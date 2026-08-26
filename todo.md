@@ -31,3 +31,12 @@
 - [x] Tornar o token Fine-grained GITHUB_TOKEN o mecanismo operacional principal de sincronização.
 - [x] Documentar a Private Key do GitHub App como configuração opcional não utilizada no fluxo atual.
 - [x] Remover o teste obrigatório da Private Key do GitHub App da suíte padrão e manter apenas a validação do token ativo.
+- [x] Remover da operação ativa a dependência de configuração inválida do GitHub App, mantendo-a opcional.
+- [x] Implementar sincronização editorial explícita usando o token Fine-grained e controle de SHA.
+- [x] Criar registro de conflitos no estado do backend e ações de recuperação visíveis, sem sobrescrita silenciosa.
+- [x] Implementar endpoint de webhook GitHub com validação de assinatura e eventos mínimos.
+- [x] Exibir status de sincronização, conflitos e recuperação no editor.
+- [x] Adicionar testes de webhook, sincronização e conflito e publicar a evolução.
+- [x] Ajustar o guardrail anti-domínio para não bloquear termos técnicos legítimos do webhook, preservando a inspeção do arquivo inteiro.
+- [ ] Publicar um checkpoint após webhook, sync-state, WriterStudio e documentação atualizados.
+- [ ] Verificar no domínio publicado o webhook e os estados de sincronização/conflito da interface.
