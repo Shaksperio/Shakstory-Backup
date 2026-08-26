@@ -61,3 +61,10 @@
 - [x] Mockar a mutation tRPC no teste de UI para comprovar que a análise recebida não altera o draft.
 - [x] Adicionar teste integrado do WriterStudio com mock explícito de `trpc.literaryAssist.analyze.useMutation` e validar que `data` não altera o draft automaticamente.
 - [x] Documentar separadamente que os estados autenticados de sincronização/conflito não puderam ser forçados no domínio publicado sem uma sessão de usuário e um conflito real; manter a validação automatizada como cobertura disponível.
+- [x] Auditar a implantação atual após o timeout e recuperar uma publicação estável.
+- [x] Preparar a ativação externa do OmniRoute somente com URL HTTPS pública e chave configuradas como secrets server-side; sem esses valores, manter o fallback Manus e documentar o bloqueio.
+- [x] Criar entidades editoriais de personagens, locais e timeline no WriterStudio, persistidas na fonte versionada existente.
+- [x] Adicionar testes de personagens, locais, timeline e estados de sincronização.
+- [ ] Executar validação de conflito com duas sessões e documentar limites caso sessão/autorização real não esteja disponível.
+- [x] Validar no backend que `OMNIROUTE_BASE_URL` use HTTPS em produção e cobrir URL insegura em teste.
+- [x] Documentar separadamente que o adaptador OmniRoute está pronto, mas a ativação externa real depende de endpoint público e chave no gerenciador seguro.

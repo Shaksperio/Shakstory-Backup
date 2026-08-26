@@ -41,3 +41,7 @@ O catálogo de modelos e provedores do OmniRoute é dinâmico. Portanto, o Shaks
 ## Validação de produção
 
 Em 26 de agosto de 2026, um `POST` sem assinatura para `https://shakstory-cpuxtpcc.manus.space/api/github/webhook` respondeu `401` em JSON, confirmando que a rota publicada está ativa e protegida por HMAC. Não foi possível forçar, no domínio publicado, os estados autenticados `synced`, `local-only` e `conflict` sem uma sessão de usuário e uma alteração concorrente real. Esses estados permanecem cobertos por testes automatizados e pela implementação visível no WriterStudio; a validação manual de conflito deve ser feita pelo proprietário no preview ou na produção com duas sessões.
+
+## Estado atual da ativação externa
+
+O adaptador e a validação de segurança estão publicados no backend, porém a ativação externa efetiva ainda não ocorreu: não existe um endpoint HTTPS público nem uma chave real fornecidos para este projeto. Portanto, o Shakstory continua usando o fallback Manus por padrão. Quando o operador publicar o OmniRoute, deverá cadastrar `OMNIROUTE_BASE_URL=https://.../v1` e `OMNIROUTE_API_KEY` como secrets server-side; o backend rejeitará URLs HTTP em produção.

@@ -6,7 +6,15 @@ type OmniResponse = {
   choices?: Array<{ message?: { content?: string | Array<{ type: string; text?: string }> } }>;
 };
 
-const getBaseUrl = () => (process.env.OMNIROUTE_BASE_URL ?? "").trim().replace(/\/$/, "");
+const getBaseUrl = () => {
+  const raw = (process.env.OMNIROUTE_BASE_URL ?? "").trim().replace(/\/$/, "");
+  if (!raw) return "";
+  let parsed: URL;
+  try { parsed = new URL(raw); } catch { throw new Error("OMNIROUTE_BASE_URL precisa ser uma URL válida."); }
+  if (process.env.NODE_ENV === "production" && parsed.protocol !== "https:") throw new Error("OMNIROUTE_BASE_URL deve usar HTTPS em produção.");
+  if (!["http:", "https:"].includes(parsed.protocol)) throw new Error("OMNIROUTE_BASE_URL deve usar http ou https.");
+  return raw;
+};
 export const isOmniRouteConfigured = () => Boolean(getBaseUrl());
 
 const headers = () => ({
