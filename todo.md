@@ -86,7 +86,7 @@
 
 - [x] Fase 0: produzir auditoria de engenharia do estado atual e fila de correções.
 - [x] Fase 1: formalizar Writing, Story, Book, Layout, EPUB, PDF, DOCX, AI, Project, Asset, Version e Validation Engines.
-- [ ] Fase 2: consolidar o modelo semântico Book → Parts → Chapters → Scenes → Blocks.
+- [x] Fase 2: consolidar o modelo semântico Book → Parts → Chapters → Scenes → Blocks.
 - [ ] Fase 3: automatizar abrir, criar, salvar, fechar, reabrir, autosave e recuperação do projeto.
 - [ ] Fase 4: evoluir o editor além de textarea, com estrutura semântica e testes de interação.
 - [ ] Fase 5: ampliar planejamento narrativo com cenas, eventos, objetivos, conflitos, relações e notas.
@@ -96,3 +96,6 @@
 - [ ] Fase 9: implementar exportações EPUB, PDF e DOCX quando compatíveis com o ambiente.
 - [ ] Fase 10: consolidar assets, versionamento, segurança e Validation Engine.
 - [ ] Fase 11: executar regressão, inspeção visual, auditoria final e publicação.
+- [x] Persistir `semanticBook` no documento versionado, mantendo `nodes` legados para compatibilidade.
+- [x] Atualizar schemas/contratos compartilhados para oficializar `parts`, `chapters`, `scenes` e `blocks`.
+- [x] Testar salvamento e reabertura preservando a estrutura semântica completa.

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { applySuggestionAtOffsets } from "@shared/literary";
+import { migrateLegacyNodes, type SemanticBook } from "@shared/book-model";
 import { AlertCircle, BookOpen, Check, CheckCircle2, ChevronRight, CloudOff, FileText, Github, History, Lightbulb, Loader2, Plus, RefreshCw, Save, Search, Sparkles, Target, UsersRound, WandSparkles, X } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
 
@@ -15,7 +16,7 @@ type Location = { id: string; name: string; atmosphere: string; notes: string };
 type TimelineEvent = { id: string; title: string; date: string; description: string };
 type PlanningData = { characters: Character[]; locations: Location[]; timeline: TimelineEvent[] };
 type PublicationData = { author: string; genre: string; language: string; description: string };
-type Book = { id: string; title: string; subtitle?: string; status: "planning" | "draft" | "revision"; targetWordCount: number; nodes: Node[]; updatedAt: number; planning?: PlanningData; publication?: PublicationData; nextSteps?: string[] };
+type Book = { id: string; title: string; subtitle?: string; status: "planning" | "draft" | "revision"; targetWordCount: number; nodes: Node[]; updatedAt: number; planning?: PlanningData; publication?: PublicationData; nextSteps?: string[]; semanticBook?: SemanticBook };
 type LibraryDocument = { version: 1; books: Book[] };
 type LiterarySuggestion = { category: string; severity: string; original: string; suggestion: string; explanation: string; confidence: number; start: number; end: number };
 type LiteraryResult = { summary: string; strengths: string[]; suggestions: LiterarySuggestion[]; narrativeNotes: string[]; model: string; availableModels: string[] };
@@ -27,6 +28,7 @@ const emptyLibrary: LibraryDocument = { version: 1, books: [] };
 const countWords = (value: string) => value.trim() ? value.trim().split(/\s+/).length : 0;
 const formatNumber = (value: number) => new Intl.NumberFormat("pt-BR").format(value);
 const formatDate = (value: number) => new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(value);
+const hydrateSemanticBook = (book: Book): Book => book.semanticBook ? book : { ...book, semanticBook: migrateLegacyNodes({ id: book.id, title: book.title, nodes: book.nodes.map(node => ({ ...node, kind: node.kind as "part" | "chapter" | "scene" })) }) };
 
 export default function WriterStudio() {
   const [view, setView] = useState<View>("library");
@@ -109,8 +111,10 @@ export default function WriterStudio() {
   });
 
   const saveLibrary = (nextLibrary: LibraryDocument) => {
+    const persistedLibrary = { ...nextLibrary, books: nextLibrary.books.map(hydrateSemanticBook) };
+    setLibrary(persistedLibrary);
     if (!navigator.onLine) { setLocalOnly(true); return; }
-    saveMutation.mutate({ path: "library.json", data: nextLibrary as unknown as Record<string, unknown>, expectedSha: sha });
+    saveMutation.mutate({ path: "library.json", data: persistedLibrary as unknown as Record<string, unknown>, expectedSha: sha });
   };
 
   const updateBook = (patch: Partial<Book>) => {
@@ -124,7 +128,7 @@ export default function WriterStudio() {
     const title = newBookTitle.trim();
     if (!title) return;
     const now = Date.now();
-    const book: Book = { id: `book-${now}`, title, status: "planning", targetWordCount: 50000, updatedAt: now, nodes: [{ id: `chapter-${now}`, title: "Capítulo 1", kind: "chapter", content: "", updatedAt: now }] };
+    const book: Book = hydrateSemanticBook({ id: `book-${now}`, title, status: "planning", targetWordCount: 50000, updatedAt: now, nodes: [{ id: `chapter-${now}`, title: "Capítulo 1", kind: "chapter", content: "", updatedAt: now }] });
     const nextLibrary = { ...library, books: [book, ...library.books] };
     setLibrary(nextLibrary);
     setActiveBookId(book.id);
@@ -186,11 +190,14 @@ export function LiteraryAssistant({ focus, setFocus, result, models, isLoading, 
 }
 export function ProjectView({ book, onNavigate, onUpdate }: { book: Book; onNavigate: (view: View) => void; onUpdate: (patch: Partial<Book>) => void }) {
   const planning = book.planning ?? { characters: [], locations: [], timeline: [] };
+  const semantic = migrateLegacyNodes({ id: book.id, title: book.title, nodes: book.nodes.map(node => ({ ...node, kind: node.kind as "part" | "chapter" | "scene" })) });
+  const semanticChapters = semantic.parts.reduce((sum, part) => sum + part.chapters.length, 0);
+  const semanticScenes = semantic.parts.flatMap(part => part.chapters).reduce((sum, chapter) => sum + chapter.scenes.length, 0);
   const words = book.nodes.reduce((sum, node) => sum + countWords(node.content), 0);
   const [nextStep, setNextStep] = useState("");
   const steps = book.nextSteps ?? [];
   const addNextStep = () => { if (!nextStep.trim()) return; onUpdate({ nextSteps: [...steps, nextStep.trim()] }); setNextStep(""); };
-  return <div className="animate-in fade-in-0 duration-300"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">Projeto do livro</p><div className="mt-2 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><h1 className="font-serif text-4xl tracking-tight">{book.title}</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Comece pelo contexto, organize o universo e só depois abra o manuscrito quando quiser.</p></div><Button onClick={() => onNavigate("prepare")}><Sparkles className="mr-2 h-4 w-4" />Preparar publicação</Button></div><div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><Stat label="Status" value={book.status === "planning" ? "Planejamento" : book.status === "revision" ? "Revisão" : "Em escrita"} icon={Target} /><Stat label="Palavras" value={`${formatNumber(words)} / ${formatNumber(book.targetWordCount)}`} icon={FileText} /><Stat label="Personagens" value={String(planning.characters.length)} icon={UsersRound} /><Stat label="Eventos" value={String(planning.timeline.length)} icon={Target} /></div><div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]"><div className="grid gap-4 md:grid-cols-3"><ProjectAction title="Planejar universo" description="Personagens, locais e timeline para dar continuidade à história." icon={UsersRound} onClick={() => onNavigate("planning")} /><ProjectAction title="Manuscrito" description="Abra capítulos apenas quando quiser escrever ou revisar." icon={FileText} onClick={() => onNavigate("editor")} /><ProjectAction title="Preparar" description="Metadados e visão estrutural para a etapa de publicação." icon={Sparkles} onClick={() => onNavigate("prepare")} /></div><section className="rounded-2xl border border-border/70 bg-card p-5"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Próximos passos</p><p className="mt-2 text-xs leading-5 text-muted-foreground">Pequenas decisões que mantêm o projeto em movimento.</p><div className="mt-4 space-y-2">{steps.map((step, index) => <div key={`${step}-${index}`} className="flex items-start gap-2 rounded-lg bg-secondary/50 p-2.5 text-xs"><span className="mt-0.5 text-primary">{index + 1}.</span><span className="flex-1">{step}</span><button className="text-muted-foreground hover:text-foreground" aria-label={`Remover passo ${step}`} onClick={() => onUpdate({ nextSteps: steps.filter((_, itemIndex) => itemIndex !== index) })}><X className="h-3.5 w-3.5" /></button></div>)}<div className="flex gap-2"><Input value={nextStep} onChange={event => setNextStep(event.target.value)} onKeyDown={event => event.key === "Enter" && addNextStep()} placeholder="Adicionar um próximo passo" /><Button size="icon" variant="outline" onClick={addNextStep} aria-label="Adicionar próximo passo" disabled={!nextStep.trim()}><Plus className="h-4 w-4" /></Button></div></div></section></div></div>;
+  return <div className="animate-in fade-in-0 duration-300"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">Projeto do livro</p><div className="mt-2 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><h1 className="font-serif text-4xl tracking-tight">{book.title}</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Comece pelo contexto, organize o universo e só depois abra o manuscrito quando quiser.</p></div><Button onClick={() => onNavigate("prepare")}><Sparkles className="mr-2 h-4 w-4" />Preparar publicação</Button></div><div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4"><Stat label="Status" value={book.status === "planning" ? "Planejamento" : book.status === "revision" ? "Revisão" : "Em escrita"} icon={Target} /><Stat label="Palavras" value={`${formatNumber(words)} / ${formatNumber(book.targetWordCount)}`} icon={FileText} /><Stat label="Personagens" value={String(planning.characters.length)} icon={UsersRound} /><Stat label="Eventos" value={String(planning.timeline.length)} icon={Target} /></div><div className="mt-5 rounded-xl border border-primary/15 bg-primary/5 px-4 py-3 text-xs text-muted-foreground">Estrutura semântica pronta: {semantic.parts.length} parte(s), {semanticChapters} capítulo(s), {semanticScenes} cena(s) e blocos preservados para evolução futura.</div><div className="mt-8 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]"><div className="grid gap-4 md:grid-cols-3"><ProjectAction title="Planejar universo" description="Personagens, locais e timeline para dar continuidade à história." icon={UsersRound} onClick={() => onNavigate("planning")} /><ProjectAction title="Manuscrito" description="Abra capítulos apenas quando quiser escrever ou revisar." icon={FileText} onClick={() => onNavigate("editor")} /><ProjectAction title="Preparar" description="Metadados e visão estrutural para a etapa de publicação." icon={Sparkles} onClick={() => onNavigate("prepare")} /></div><section className="rounded-2xl border border-border/70 bg-card p-5"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Próximos passos</p><p className="mt-2 text-xs leading-5 text-muted-foreground">Pequenas decisões que mantêm o projeto em movimento.</p><div className="mt-4 space-y-2">{steps.map((step, index) => <div key={`${step}-${index}`} className="flex items-start gap-2 rounded-lg bg-secondary/50 p-2.5 text-xs"><span className="mt-0.5 text-primary">{index + 1}.</span><span className="flex-1">{step}</span><button className="text-muted-foreground hover:text-foreground" aria-label={`Remover passo ${step}`} onClick={() => onUpdate({ nextSteps: steps.filter((_, itemIndex) => itemIndex !== index) })}><X className="h-3.5 w-3.5" /></button></div>)}<div className="flex gap-2"><Input value={nextStep} onChange={event => setNextStep(event.target.value)} onKeyDown={event => event.key === "Enter" && addNextStep()} placeholder="Adicionar um próximo passo" /><Button size="icon" variant="outline" onClick={addNextStep} aria-label="Adicionar próximo passo" disabled={!nextStep.trim()}><Plus className="h-4 w-4" /></Button></div></div></section></div></div>;
 }
 function ProjectAction({ title, description, icon: Icon, onClick }: { title: string; description: string; icon: typeof BookOpen; onClick: () => void }) { return <button onClick={onClick} className="rounded-2xl border border-border/70 bg-card p-5 text-left transition hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md"><Icon className="h-4 w-4 text-primary" /><h2 className="mt-8 font-serif text-xl">{title}</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p><span className="mt-5 inline-flex items-center text-xs font-medium text-primary">Abrir <ChevronRight className="ml-1 h-3 w-3" /></span></button>; }
 function PreparationView({ book, onUpdate }: { book: Book; onUpdate: (patch: Partial<Book>) => void }) {
