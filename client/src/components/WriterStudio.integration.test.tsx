@@ -33,6 +33,8 @@ describe("WriterStudio integrated literary assistance", () => {
   it("sends the draft only after analysis is requested and applies the returned suggestion manually", async () => {
     render(<WriterStudio />);
     fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
+    expect(await screen.findByText("Projeto do livro")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
     const editor = await screen.findByPlaceholderText("Comece onde a história pede.");
     await waitFor(() => expect((editor as HTMLTextAreaElement).value).toBe("A noite caiu."));
 
@@ -42,5 +44,14 @@ describe("WriterStudio integrated literary assistance", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Aplicar sugestão" }));
     expect((editor as HTMLTextAreaElement).value).toBe("A tarde caiu.");
+
+    fireEvent.click(screen.getByRole("button", { name: "Projeto" }));
+    expect(await screen.findByText("Projeto do livro")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Planejar" }));
+    expect(await screen.findByText("Seu projeto, antes das páginas.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
+    expect(await screen.findByPlaceholderText("Comece onde a história pede.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Preparar" }));
+    expect(await screen.findByText("Preparação editorial")).toBeTruthy();
   });
 });

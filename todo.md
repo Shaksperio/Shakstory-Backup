@@ -65,6 +65,19 @@
 - [x] Preparar a ativação externa do OmniRoute somente com URL HTTPS pública e chave configuradas como secrets server-side; sem esses valores, manter o fallback Manus e documentar o bloqueio.
 - [x] Criar entidades editoriais de personagens, locais e timeline no WriterStudio, persistidas na fonte versionada existente.
 - [x] Adicionar testes de personagens, locais, timeline e estados de sincronização.
-- [ ] Executar validação de conflito com duas sessões e documentar limites caso sessão/autorização real não esteja disponível.
+- [x] Retirar a validação de conflito com edição de capítulo do fluxo principal; documentar que conflitos continuam protegidos pelo SHA e que o teste manual é opcional para a sincronização avançada.
 - [x] Validar no backend que `OMNIROUTE_BASE_URL` use HTTPS em produção e cobrir URL insegura em teste.
 - [x] Documentar separadamente que o adaptador OmniRoute está pronto, mas a ativação externa real depende de endpoint público e chave no gerenciador seguro.
+- [x] Reorientar o produto para planejamento, organização e preparação editorial, sem exigir edição direta de capítulo.
+- [x] Analisar Novelist, Kindle Create e Atticus como referências de estrutura, organização e exportação editorial, documentando limitações de acesso quando aplicável.
+- [x] Redesenhar a navegação do WriterStudio com projeto, planejamento, manuscrito opcional e preparação/publicação.
+- [x] Ajustar entidades e textos da interface para refletir o novo fluxo, preservando personagens, locais e timeline.
+- [x] Adicionar testes da nova navegação e executar validação visual e de regressões.
+- [x] Criar uma área Projeto separada de Planejar para resumo, status, meta e próximos passos do livro.
+- [x] Criar uma área Preparar com metadados editoriais e pré-visualização estrutural, sem prometer exportação ainda não implementada.
+- [x] Documentar explicitamente que o Atticus ficou bloqueado pelo captcha e que não foram inferidas funcionalidades não verificadas.
+- [x] Adicionar testes e validação visual da navegação Biblioteca → Projeto → Planejar/Manuscrito → Preparar.
+- [x] Exibir na área Projeto o status, a meta de palavras e próximos passos explícitos do livro.
+- [x] Persistir próximos passos do projeto no documento editorial sem editar capítulos.
+- [x] Cobrir em teste a sequência Biblioteca → Projeto → Planejar → Manuscrito → Preparar.
+- [x] Capturar e registrar evidência visual da navegação interna autenticada/mockada.
