@@ -1,11 +1,13 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { protectedProcedure, publicProcedure, router } from "./_core/trpc";
+import { TRPCError } from "@trpc/server";
 import { getEditorialRepository, getEditorialRepositoryMode } from "./data-access";
 import { RepositoryConflictError } from "../backend/src/repositories/types";
+import { analyzeLiteraryText, literaryAnalysisInputSchema } from "./literary-analysis";
+import { listLLMModels } from "./_core/llm";
 import { getSyncSnapshot, markSyncConflict, markSyncFailed, markSyncStarted, markSyncSucceeded } from "./sync-state";
 
 const documentPath = z.string().regex(/^[a-z0-9][a-z0-9/_-]*\.json$/i, "Caminho de documento inválido.");
@@ -19,6 +21,19 @@ export const appRouter = router({
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+  }),
+  literaryAssist: router({
+    models: protectedProcedure.query(async () => {
+      const result = await listLLMModels();
+      return { models: result.data };
+    }),
+    analyze: protectedProcedure.input(literaryAnalysisInputSchema).mutation(async ({ input }) => {
+      try {
+        return await analyzeLiteraryText(input);
+      } catch (error) {
+        throw new TRPCError({ code: "BAD_GATEWAY", message: error instanceof Error ? `A assessoria literária não respondeu: ${error.message}` : "A assessoria literária não respondeu." });
+      }
     }),
   }),
   data: router({

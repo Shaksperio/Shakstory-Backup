@@ -38,5 +38,25 @@
 - [x] Exibir status de sincronização, conflitos e recuperação no editor.
 - [x] Adicionar testes de webhook, sincronização e conflito e publicar a evolução.
 - [x] Ajustar o guardrail anti-domínio para não bloquear termos técnicos legítimos do webhook, preservando a inspeção do arquivo inteiro.
-- [ ] Publicar um checkpoint após webhook, sync-state, WriterStudio e documentação atualizados.
+- [x] Publicar um checkpoint após webhook, sync-state, WriterStudio e documentação atualizados.
 - [ ] Verificar no domínio publicado o webhook e os estados de sincronização/conflito da interface.
+- [x] Pesquisar o repositório OmniRoute e mapear sua forma de expor modelos, autenticação e compatibilidade.
+- [x] Definir categorias de análise literária, formato estruturado de sugestões e política de privacidade do manuscrito.
+- [ ] Configurar a integração do OmniRoute ou um endpoint OpenAI-compatible exclusivamente no backend.
+- [x] Implementar análise de ortografia, gramática, classes gramaticais, sinônimos, narrativa, tom e estilo.
+- [x] Criar painel de assistência no editor com explicações e aplicação manual de sugestões.
+- [x] Adicionar testes para contrato estruturado, falhas de modelo e proteção contra alteração automática do manuscrito.
+- [x] Conectar o resultado da mutation ao painel e limpar análises obsoletas ao trocar de nó ou rascunho.
+- [x] Associar posição/ocorrência às sugestões e aplicar alterações manuais no trecho correto.
+- [x] Testar falhas do catálogo/LLM e garantir que o manuscrito não muda sem ação explícita.
+- [x] Limpar o resultado da assistência também ao trocar de capítulo ou livro.
+- [x] Adicionar teste de falha do catálogo/LLM e teste explícito de que a análise não altera o rascunho até a aplicação manual.
+- [x] Cobrir falha do endpoint LLM (`invokeLLM`) e sua propagação pela procedure de assistência.
+- [x] Criar teste do fluxo do WriterStudio que prove análise sem alteração automática e aplicação somente por ação explícita.
+- [x] Testar `literaryAssist.analyze` via `appRouter.createCaller` e verificar o erro `BAD_GATEWAY`.
+- [x] Testar o WriterStudio real: análise não altera o draft e Aplicar sugestão altera somente o offset confirmado.
+- [x] Adicionar teste de UI que renderize o WriterStudio/assistente, dispare análise e clique em Aplicar sugestão.
+- [x] Garantir que testes `.tsx` do cliente sejam descobertos pelo Vitest e passem na suíte padrão.
+- [x] Completar o teste DOM com clique em Analisar trecho, resposta simulada e depois Aplicar sugestão.
+- [x] Mockar a mutation tRPC no teste de UI para comprovar que a análise recebida não altera o draft.
+- [x] Adicionar teste integrado do WriterStudio com mock explícito de `trpc.literaryAssist.analyze.useMutation` e validar que `data` não altera o draft automaticamente.
