@@ -1,33 +1,37 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { startLogin } from "@/const";
+import { BookOpenText, Github, Loader2, ShieldCheck } from "lucide-react";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Workflow, Frontend Best Practices, Design Guide and Common Pitfalls
- */
 export default function Home() {
-  // The useAuth hook provides authentication state.
-  // To implement login/logout, call logout(), or start login from an event
-  // handler: onClick={() => startLogin()} (imported from "@/const"). Never call
-  // startLogin() during render (no href={startLogin()}) — it mints a one-time
-  // nonce cookie and must run only at the moment of navigation.
-  let { user, loading, error, isAuthenticated, logout } = useAuth();
+  const { loading, user } = useAuth();
+  if (loading) return <div className="grid min-h-screen place-items-center"><Loader2 className="h-5 w-5 animate-spin text-muted-foreground" /></div>;
 
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
+  if (!user) {
+    return (
+      <main className="grid min-h-screen place-items-center bg-background p-6">
+        <section className="w-full max-w-xl rounded-3xl border border-border bg-card p-8 text-center shadow-sm sm:p-12">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-primary text-primary-foreground"><BookOpenText className="h-6 w-6" /></div>
+          <p className="mt-7 font-mono text-xs uppercase tracking-[0.16em] text-primary">Shakstory</p>
+          <h1 className="mt-3 font-serif text-4xl tracking-tight sm:text-5xl">Seu estúdio de autor.</h1>
+          <p className="mx-auto mt-5 max-w-md text-sm leading-7 text-muted-foreground">Escreva com foco, organize seu universo e mantenha seu trabalho versionado com segurança.</p>
+          <Button size="lg" className="mt-8 rounded-xl px-6" onClick={() => startLogin()}>Entrar no estúdio</Button>
+          <p className="mt-6 flex items-center justify-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-3.5 w-3.5 text-primary" />Acesso protegido por autenticação segura</p>
+        </section>
+      </main>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
-      </main>
-    </div>
+    <main className="grid min-h-screen place-items-center bg-background p-6">
+      <section className="w-full max-w-lg rounded-3xl border border-border bg-card p-8 shadow-sm sm:p-10">
+        <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-xl bg-primary text-primary-foreground"><BookOpenText className="h-5 w-5" /></div><div><p className="font-serif text-xl">Shakstory</p><p className="text-xs text-muted-foreground">Estúdio do autor</p></div></div>
+        <p className="mt-10 font-mono text-xs uppercase tracking-[0.16em] text-primary">Integração de dados</p>
+        <h1 className="mt-3 font-serif text-3xl tracking-tight">Conecte seu GitHub.</h1>
+        <p className="mt-4 text-sm leading-6 text-muted-foreground">Autorize o Shakstory a sincronizar documentos editoriais versionados no repositório privado selecionado. O token permanece no backend.</p>
+        <Button className="mt-7 w-full rounded-xl" size="lg" onClick={() => window.location.assign("/api/github/oauth/start")}><Github className="mr-2 h-4 w-4" />Autorizar GitHub OAuth</Button>
+        <p className="mt-5 text-center text-xs text-muted-foreground">Sessão Manus ativa para {user.name || user.email || "autor"}.</p>
+      </section>
+    </main>
   );
 }

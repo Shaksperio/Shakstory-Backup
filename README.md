@@ -30,9 +30,9 @@ As variáveis de ambiente são injetadas pelo ambiente de execução e não deve
 
 ## Segurança e dados
 
-Cada rota de domínio valida o autor autenticado antes de consultar ou alterar um livro. Arquivos visuais devem ser enviados para storage de objetos; os documentos JSON guardam apenas referências e metadados. Nenhum arquivo deste repositório deve conter token, senha, credencial Firebase, dump privado ou dados fictícios de clientes, avaliações ou depoimentos.
+Cada rota de domínio valida o autor autenticado antes de consultar ou alterar um livro. Arquivos visuais devem ser enviados para storage de objetos; os documentos JSON guardam apenas referências e metadados. Nenhum arquivo deste repositório deve conter token, senha, credencial Firebase, dump privado ou dados pessoais reais não autorizados.
 
-O segundo anexo foi usado somente como referência para separação de camadas, manifesto, schemas, fila de persistência, controle de concorrência e recuperação. Entidades e nomenclaturas de orçamento de pintura foram deliberadamente excluídas do domínio do Shakstory.
+O segundo anexo foi usado somente como referência para separação de camadas, manifesto, schemas, fila de persistência, controle de concorrência e recuperação. O domínio do Shakstory foi modelado exclusivamente para autoria, manuscritos e planejamento narrativo.
 
 ## Licença e publicação
 

@@ -19,6 +19,16 @@ A API valida o payload, agrupa alterações do autosave e publica documentos ind
 
 O GitHub não é usado como banco de dados de baixa latência nem recebe um commit a cada tecla. O banco operacional mantém a interação rápida; JSON/GitHub representa persistência versionada, auditoria e backup.
 
+## GitHub OAuth
+
+Para o OAuth App do GitHub, use como **Authorization callback URL**:
+
+```text
+https://shakstory-cpuxtpcc.manus.space/api/github/oauth/callback
+```
+
+O fluxo usa `state`, PKCE (`S256`) e cookies `HttpOnly`/`Secure`. O Client ID e o Client Secret são lidos exclusivamente do ambiente do servidor como `GITHUB_OAUTH_CLIENT_ID` e `GITHUB_OAUTH_CLIENT_SECRET`. O frontend inicia a autorização por `/api/github/oauth/start` e nunca recebe o Client Secret.
+
 ## Publicação do repositório
 
 ```bash

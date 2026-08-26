@@ -12,7 +12,7 @@ O domínio do Shakstory é centrado em um livro e em seus documentos relacionado
 | Versão | Snapshot nomeado de um nó, conteúdo e contagem de palavras. | `data/versions/{id}.json` |
 | Mídia | Referência de storage, tipo, MIME e tamanho; nunca bytes. | `data/media/{id}.json` |
 
-As relações são feitas por IDs e não por cópia de registros inteiros. Alterar o preço de um catálogo, conceito presente no material de referência, não possui equivalente neste domínio; o editor preserva conteúdo, estrutura e snapshots do manuscrito.
+As relações são feitas por IDs e não por cópia de registros inteiros. O editor preserva conteúdo, estrutura e snapshots do manuscrito mesmo quando metadados relacionados evoluem.
 
 ## Consistência
 

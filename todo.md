@@ -9,7 +9,18 @@
 - [x] Validar que nenhum arquivo, dado ou nomenclatura de orçamento de pintura foi incorporado ao editor.
 - [ ] Verificar a integração final com o repositório GitHub privado sem expor tokens, credenciais ou secrets.
 - [x] Corrigir o validador de dados para ignorar diretórios ao percorrer o manifesto e os arquivos JSON.
-- [ ] Criar exemplos mínimos de dados editoriais válidos em `data/` compatíveis com os schemas.
-- [ ] Conectar a camada de repositórios aos serviços reais do app sem expor o GitHub ao frontend.
+- [x] Criar exemplos mínimos de dados editoriais válidos em `data/` compatíveis com os schemas.
+- [x] Conectar a camada de repositórios aos serviços reais do app sem expor o GitHub ao frontend.
 - [ ] Adicionar `.env.example` e documentação explícita de deploy e restore em ambiente limpo.
-- [ ] Expandir a validação anti-domínio para código, documentação e nomes de arquivos, removendo referências remanescentes ao domínio de pintura.
+- [x] Expandir a validação anti-domínio para código, documentação e nomes de arquivos, removendo referências remanescentes ao domínio de pintura.
+- [x] Implementar GitHub OAuth com início de autorização, callback publicado e proteção contra CSRF/state.
+- [x] Adicionar secrets do GitHub OAuth e documentar a configuração no GitHub.
+- [x] Testar o fluxo OAuth sem expor client secret, access token ou dados de sessão.
+- [ ] Conectar getEditorialRepository() a uma leitura e gravação efetivas de documentos editoriais.
+- [ ] Publicar e validar no domínio permanente que `/api/github/oauth/start` redireciona ao GitHub.
+- [x] Adicionar teste de integração OAuth com mocks para callback, token e identidade GitHub.
+- [x] Corrigir o validador abrangente para não tentar ler diretórios como arquivos.
+- [x] Expandir o validador do repositório para scripts, package e demais arquivos relevantes, documentando exceções estritamente necessárias.
+- [x] Remover ou justificar formalmente referências técnicas restantes sem mascará-las por exclusão do verificador.
+- [x] Validar os próprios scripts de verificação com allowlist linha a linha, sem ignorar arquivos inteiros.
+- [x] Documentar formalmente as linhas técnicas permitidas nos guardrails de validação.
