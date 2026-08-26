@@ -12,7 +12,7 @@ const harness = vi.hoisted(() => {
   };
   let literaryOptions: { onSuccess?: (value: typeof analysis) => void } = {};
   const literaryMutation = { isPending: false, mutate: vi.fn(() => literaryOptions.onSuccess?.(analysis)) };
-  const library = { version: 1, books: [{ id: "book-1", title: "Caderno", status: "draft", targetWordCount: 50000, updatedAt: Date.now(), nodes: [{ id: "chapter-1", title: "Capítulo 1", kind: "chapter", content: "A noite caiu.", updatedAt: Date.now() }] }] };
+  const library = { version: 1, books: [{ id: "book-1", title: "Caderno", status: "draft", targetWordCount: 50000, updatedAt: Date.now(), nodes: [{ id: "chapter-1", title: "Capítulo 1", kind: "chapter", content: "A noite caiu.", updatedAt: Date.now() },] }] };
   const trpc = {
     data: { get: { useQuery: vi.fn(() => ({ data: { data: library, sha: "sha-1" }, isLoading: false, refetch: vi.fn() })) }, status: { useQuery: vi.fn(() => ({ data: { status: "synced" } })) }, put: { useMutation: vi.fn(() => ({ isPending: false, mutate: vi.fn() })) } },
     literaryAssist: { models: { useQuery: vi.fn(() => ({ data: { models: [{ id: "literary-model" }] } })) }, analyze: { useMutation: vi.fn((options: typeof literaryOptions) => { literaryOptions = options; return literaryMutation; }) } },
@@ -29,6 +29,7 @@ describe("WriterStudio integrated literary assistance", () => {
     vi.clearAllMocks();
     localStorage.clear();
   });
+
 
   it("sends the draft only after analysis is requested and applies the returned suggestion manually", async () => {
     render(<WriterStudio />);

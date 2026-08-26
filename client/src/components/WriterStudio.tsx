@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { applySuggestionAtOffsets } from "@shared/literary";
 import { migrateLegacyNodes, type SemanticBook } from "@shared/book-model";
 import { addChapter, createInitialNode, moveNode, removeNode, updateNodeContent } from "@shared/project-lifecycle";
-import { scenesOf, sceneText } from "@shared/semantic-editor";
+import { replaceSceneBlocks, scenesOf, sceneText } from "@shared/semantic-editor";
+import { validateBook } from "@shared/validation";
 import { buildDocx, buildEpub, buildPdf, buildPrintHtml, chaptersFromNodes } from "@shared/book-export";
 import { AlertCircle, BookOpen, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, CloudOff, FileText, Github, History, Lightbulb, Loader2, Plus, RefreshCw, Save, Search, Sparkles, Target, Trash2, UsersRound, WandSparkles, X } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";
@@ -58,6 +59,7 @@ export default function WriterStudio() {
   const [notice, setNotice] = useState<string | null>(null);
   const [assistFocus, setAssistFocus] = useState<"language" | "grammar" | "parts_of_speech" | "lexicon" | "narrative" | "voice" | "style" | "full">("full");
   const [assistResult, setAssistResult] = useState<LiteraryResult | null>(null);
+  const restoredWorkspace = React.useRef(false);
 
   const activeBook = useMemo(() => library.books.find(book => book.id === activeBookId) ?? null, [library.books, activeBookId]);
   const activeNode = useMemo(() => activeBook?.nodes.find(node => node.id === activeNodeId) ?? activeBook?.nodes[0] ?? null, [activeBook, activeNodeId]);
@@ -67,8 +69,12 @@ export default function WriterStudio() {
     if (libraryQuery.isLoading) return;
     const savedDraft = localStorage.getItem("shakstory:library");
     if (libraryQuery.data?.data) {
-      setLibrary(libraryQuery.data.data as LibraryDocument);
+      const restored = libraryQuery.data.data as LibraryDocument;
+      setLibrary(restored);
       setSha(libraryQuery.data.sha);
+      const savedBookId = localStorage.getItem("shakstory:active-book");
+      const savedNodeId = localStorage.getItem("shakstory:active-node");
+      if (savedBookId && restored.books.some(book => book.id === savedBookId)) { setActiveBookId(savedBookId); const restoredBook = restored.books.find(book => book.id === savedBookId); setActiveNodeId(restoredBook?.nodes.some(node => node.id === savedNodeId) ? savedNodeId : restoredBook?.nodes[0]?.id ?? null); if (!restoredWorkspace.current) { setView(savedNodeId && restoredBook?.nodes.some(node => node.id === savedNodeId) ? "editor" : "project"); restoredWorkspace.current = true; } }
       setLocalOnly(false);
       return;
     }
@@ -93,6 +99,7 @@ export default function WriterStudio() {
           ...book,
           updatedAt: Date.now(),
           nodes: book.nodes.map(node => node.id === activeNode.id ? { ...node, content: draft, updatedAt: Date.now() } : node),
+          semanticBook: book.semanticBook ? (() => { const scene = scenesOf(book.semanticBook, activeNode.id)[0]; if (!scene) return book.semanticBook; const blocks = draft.split(/\n{2,}/).map(text => text.trim()).filter(Boolean).map((text, index) => ({ id: scene.blocks[index]?.id ?? `${scene.id}_block_${index + 1}`, kind: scene.blocks[index]?.kind ?? "paragraph" as const, text, sortOrder: index })); return replaceSceneBlocks(book.semanticBook, scene.id, blocks); })() : book.semanticBook,
         }),
       };
       localStorage.setItem(`shakstory:node:${activeNode.id}`, draft);
@@ -139,8 +146,11 @@ export default function WriterStudio() {
     const book: Book = hydrateSemanticBook({ id: `book-${now}`, title, status: "planning", targetWordCount: 50000, updatedAt: now, nodes: [createInitialNode(now)] });
     const nextLibrary = { ...library, books: [book, ...library.books] };
     setLibrary(nextLibrary);
+    restoredWorkspace.current = true;
     setActiveBookId(book.id);
+    localStorage.setItem("shakstory:active-book", book.id);
     setActiveNodeId(book.nodes[0].id);
+    localStorage.setItem("shakstory:active-node", book.nodes[0].id);
     setNewBookTitle("");
     setNewBookOpen(false);
     setView("project");
@@ -154,10 +164,15 @@ export default function WriterStudio() {
   };
 
   const chooseBook = (book: Book) => {
+    restoredWorkspace.current = true;
     setActiveBookId(book.id);
+    localStorage.setItem("shakstory:active-book", book.id);
     setActiveNodeId(book.nodes[0]?.id ?? null);
+    if (book.nodes[0]) localStorage.setItem("shakstory:active-node", book.nodes[0].id);
     setView("project");
   };
+
+  useEffect(() => { if (activeBookId) localStorage.setItem("shakstory:active-book", activeBookId); if (activeNodeId) localStorage.setItem("shakstory:active-node", activeNodeId); }, [activeBookId, activeNodeId]);
 
   const updateNodeList = (transform: (nodes: Node[]) => Node[]) => {
     if (!activeBookId) return;
@@ -198,7 +213,7 @@ function BookCard({ book, onOpen }: { book: Book; onOpen: () => void }) { const 
 
 function EditorView({ book, nodes, activeNode, draft, onDraftChange, onSelectNode, onBack, onSave, onAddChapter, onMoveNode, onRemoveNode, onPromotePlannedScene, saving, notice, assistant }: { book: Book; nodes: Node[]; activeNode: Node | null; draft: string; onDraftChange: (value: string) => void; onSelectNode: (id: string) => void; onBack: () => void; onSave: () => void; onAddChapter: () => void; onMoveNode: (id: string, direction: "up" | "down") => void; onRemoveNode: (id: string) => void; onPromotePlannedScene: (scene: NonNullable<SemanticBook["plannedScenes"]>[number]) => void; saving: boolean; notice: string | null; assistant: LiteraryAssistantProps }) {
   const [plainTextMode, setPlainTextMode] = useState(false);
-  const semanticScenes = activeNode && book.semanticBook ? scenesOf(book.semanticBook, activeNode.id) : [];
+  const semanticScenes = activeNode && book.semanticBook ? activeNode.kind === "scene" ? book.semanticBook.parts.flatMap(part => part.chapters).flatMap(chapter => chapter.scenes).filter(scene => scene.id === activeNode.id) : scenesOf(book.semanticBook, activeNode.id) : [];
   const semanticScene = semanticScenes[0];
   const blocks = semanticScene && sceneText(semanticScene) === draft ? semanticScene.blocks.map(block => block.text) : draft.split(/\n{2,}/);
   const updateBlock = (index: number, text: string) => { const next = [...blocks]; next[index] = text; onDraftChange(next.join("\n\n")); };
@@ -228,13 +243,14 @@ function PreparationView({ book, onUpdate }: { book: Book; onUpdate: (patch: Par
   const [exportBusy, setExportBusy] = useState(false);
   const update = (patch: Partial<PublicationData>) => setPublication(current => ({ ...current, ...patch }));
   const exportBook = { title: book.title, author: publication.author, language: publication.language, description: publication.description, layout, chapters: chaptersFromNodes(book.nodes) };
+  const validationIssues = useMemo(() => validateBook({ title: book.title, author: publication.author, language: publication.language, nodes: book.nodes, semanticBook: book.semanticBook }), [book, publication]);
   const download = (blob: Blob, filename: string) => { const url = URL.createObjectURL(blob); const anchor = document.createElement("a"); anchor.href = url; anchor.download = filename; anchor.click(); URL.revokeObjectURL(url); };
   const exportEpub = async () => { if (exportBusy) return; setExportBusy(true); try { setExportStatus("Gerando EPUB…"); download(await buildEpub(exportBook), `${book.title}.epub`); setExportStatus("EPUB pronto"); } catch { setExportStatus("Não foi possível gerar o EPUB"); } finally { setExportBusy(false); } };
   const exportDocx = async () => { if (exportBusy) return; setExportBusy(true); try { setExportStatus("Gerando DOCX…"); download(await buildDocx(exportBook), `${book.title}.docx`); setExportStatus("DOCX pronto"); } catch { setExportStatus("Não foi possível gerar o DOCX"); } finally { setExportBusy(false); } };
   const exportPdf = () => { if (exportBusy) return; setExportBusy(true); try { setExportStatus("Gerando PDF…"); download(buildPdf(exportBook), `${book.title}.pdf`); setExportStatus("PDF pronto"); } catch { setExportStatus("Não foi possível gerar o PDF"); } finally { setExportBusy(false); } };
   const exportHtml = () => { if (exportBusy) return; setExportBusy(true); try { setExportStatus("Gerando HTML…"); const blob = new Blob([buildPrintHtml(exportBook)], { type: "text/html" }); download(blob, `${book.title}.html`); setExportStatus("HTML pronto"); } catch { setExportStatus("Não foi possível gerar o HTML"); } finally { setExportBusy(false); } };
   const exportPrint = () => { if (exportBusy) return; setExportBusy(true); try { setExportStatus("Abrindo impressão…"); const printWindow = window.open("", "_blank"); if (!printWindow) { setExportStatus("Permita pop-ups para abrir a impressão"); return; } printWindow.document.write(buildPrintHtml(exportBook)); printWindow.document.close(); printWindow.focus(); printWindow.print(); setExportStatus("Pré-visualização de impressão aberta"); } catch { setExportStatus("Não foi possível abrir a impressão"); } finally { setExportBusy(false); } };
-  return <div className="animate-in fade-in-0 duration-300"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">Preparação editorial</p><h1 className="mt-2 font-serif text-4xl">Leve o projeto até a capa.</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Preencha os metadados que acompanham o livro e revise a estrutura antes de pensar em exportação. Esta etapa não altera capítulos.</p><div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"><section className="rounded-2xl border border-border/70 bg-card p-5"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Metadados</p><label className="mt-5 block text-xs font-medium text-muted-foreground">Autor<Input className="mt-2" value={publication.author} onChange={event => update({ author: event.target.value })} placeholder="Nome que aparecerá na publicação" /></label><label className="mt-4 block text-xs font-medium text-muted-foreground">Gênero<Input className="mt-2" value={publication.genre} onChange={event => update({ genre: event.target.value })} placeholder="Romance, ensaio, fantasia…" /></label><label className="mt-4 block text-xs font-medium text-muted-foreground">Idioma<Input className="mt-2" value={publication.language} onChange={event => update({ language: event.target.value })} /></label><label className="mt-4 block text-xs font-medium text-muted-foreground">Descrição<textarea className="mt-2 min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring" value={publication.description} onChange={event => update({ description: event.target.value })} placeholder="A apresentação editorial do livro" /></label><Button className="mt-5" onClick={() => onUpdate({ publication })}><Save className="mr-2 h-4 w-4" />Salvar metadados</Button></section><aside className="rounded-2xl border border-primary/20 bg-primary/5 p-5"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Pré-visualização</p><h2 className="mt-5 font-serif text-3xl">{book.title}</h2>{book.subtitle && <p className="mt-1 text-sm text-muted-foreground">{book.subtitle}</p>}<div className="mt-6 space-y-3 border-t border-primary/15 pt-4 text-sm"><p><span className="text-muted-foreground">Autor</span><br />{publication.author || "A definir"}</p><p><span className="text-muted-foreground">Gênero</span><br />{publication.genre || "A definir"}</p><p><span className="text-muted-foreground">Idioma</span><br />{publication.language || "A definir"}</p></div><div className="mt-6 rounded-lg bg-background/70 p-3 text-xs leading-5 text-muted-foreground">{publication.description || "A descrição aparecerá aqui quando você preencher os metadados."}</div><div className="mt-6"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Prévia diagramada</p><iframe title="Prévia do layout editorial" srcDoc={buildPrintHtml(exportBook)} className="mt-3 h-56 w-full rounded-lg border border-border bg-white" /></div><div className="mt-6 border-t border-primary/15 pt-4"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Layout e exportação</p><select className="mt-3 h-9 w-full rounded-md border border-border bg-background px-2 text-xs" value={layout} onChange={event => setLayout(event.target.value as typeof layout)}><option value="classic">Clássico editorial</option><option value="compact">Compacto para revisão</option></select><div className="mt-3 grid grid-cols-2 gap-2"><Button variant="outline" size="sm" onClick={exportEpub} disabled={exportBusy}>EPUB</Button><Button variant="outline" size="sm" onClick={exportDocx} disabled={exportBusy}>DOCX</Button><Button variant="outline" size="sm" onClick={exportPdf} disabled={exportBusy}>PDF</Button><Button variant="outline" size="sm" onClick={exportPrint} disabled={exportBusy}>Imprimir</Button><Button variant="outline" size="sm" onClick={exportHtml} disabled={exportBusy}>HTML</Button></div>{exportStatus && <p className="mt-3 text-[11px] text-primary">{exportStatus}</p>}</div><p className="mt-5 text-[11px] leading-4 text-muted-foreground">O conteúdo permanece separado do layout; exportar cria uma cópia e não altera o projeto.</p></aside></div></div>;
+  return <div className="animate-in fade-in-0 duration-300"><p className="font-mono text-[10px] uppercase tracking-[0.16em] text-primary">Preparação editorial</p><h1 className="mt-2 font-serif text-4xl">Leve o projeto até a capa.</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Preencha os metadados que acompanham o livro e revise a estrutura antes de pensar em exportação. Esta etapa não altera capítulos.</p><div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]"><section className="rounded-2xl border border-border/70 bg-card p-5"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Metadados</p><label className="mt-5 block text-xs font-medium text-muted-foreground">Autor<Input className="mt-2" value={publication.author} onChange={event => update({ author: event.target.value })} placeholder="Nome que aparecerá na publicação" /></label><label className="mt-4 block text-xs font-medium text-muted-foreground">Gênero<Input className="mt-2" value={publication.genre} onChange={event => update({ genre: event.target.value })} placeholder="Romance, ensaio, fantasia…" /></label><label className="mt-4 block text-xs font-medium text-muted-foreground">Idioma<Input className="mt-2" value={publication.language} onChange={event => update({ language: event.target.value })} /></label><label className="mt-4 block text-xs font-medium text-muted-foreground">Descrição<textarea className="mt-2 min-h-32 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring" value={publication.description} onChange={event => update({ description: event.target.value })} placeholder="A apresentação editorial do livro" /></label><Button className="mt-5" onClick={() => onUpdate({ publication })}><Save className="mr-2 h-4 w-4" />Salvar metadados</Button></section><aside className="rounded-2xl border border-primary/20 bg-primary/5 p-5"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Pré-visualização</p><h2 className="mt-5 font-serif text-3xl">{book.title}</h2>{book.subtitle && <p className="mt-1 text-sm text-muted-foreground">{book.subtitle}</p>}<div className="mt-6 space-y-3 border-t border-primary/15 pt-4 text-sm"><p><span className="text-muted-foreground">Autor</span><br />{publication.author || "A definir"}</p><p><span className="text-muted-foreground">Gênero</span><br />{publication.genre || "A definir"}</p><p><span className="text-muted-foreground">Idioma</span><br />{publication.language || "A definir"}</p></div><div className="mt-6 rounded-lg bg-background/70 p-3 text-xs leading-5 text-muted-foreground">{publication.description || "A descrição aparecerá aqui quando você preencher os metadados."}</div><div className="mt-6"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Prévia diagramada</p><iframe title="Prévia do layout editorial" srcDoc={buildPrintHtml(exportBook)} className="mt-3 h-56 w-full rounded-lg border border-border bg-white" /></div><div className="mt-6 border-t border-primary/15 pt-4"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Validação editorial</p>{validationIssues.length === 0 ? <p className="mt-2 text-xs text-primary">Pronto para revisão de exportação.</p> : <div className="mt-2 space-y-1">{validationIssues.map(issue => <p key={`${issue.code}-${issue.path}`} className={`text-xs ${issue.severity === "error" ? "text-destructive" : "text-muted-foreground"}`}>{issue.severity === "error" ? "Erro" : "Aviso"}: {issue.message}</p>)}</div>}<div className="mt-6"><p className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">Layout e exportação</p><select className="mt-3 h-9 w-full rounded-md border border-border bg-background px-2 text-xs" value={layout} onChange={event => setLayout(event.target.value as typeof layout)}><option value="classic">Clássico editorial</option><option value="compact">Compacto para revisão</option></select><div className="mt-3 grid grid-cols-2 gap-2"><Button variant="outline" size="sm" onClick={exportEpub} disabled={exportBusy}>EPUB</Button><Button variant="outline" size="sm" onClick={exportDocx} disabled={exportBusy}>DOCX</Button><Button variant="outline" size="sm" onClick={exportPdf} disabled={exportBusy}>PDF</Button><Button variant="outline" size="sm" onClick={exportPrint} disabled={exportBusy}>Imprimir</Button><Button variant="outline" size="sm" onClick={exportHtml} disabled={exportBusy}>HTML</Button></div>{exportStatus && <p className="mt-3 text-[11px] text-primary">{exportStatus}</p>}</div></div><p className="mt-5 text-[11px] leading-4 text-muted-foreground">O conteúdo permanece separado do layout; exportar cria uma cópia e não altera o projeto.</p></aside></div></div>;
 }
 
 export function PlanningView({ book, onUpdate }: { book: Book; onUpdate: (planning: PlanningData & { story?: StoryData }) => void }) {

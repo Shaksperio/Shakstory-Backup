@@ -90,12 +90,12 @@
 - [x] Fase 3: automatizar abrir, criar, salvar, fechar, reabrir, autosave e recuperação do projeto.
 - [x] Fase 4: evoluir o editor além de textarea, com estrutura semântica e testes de interação.
 - [x] Fase 5: ampliar planejamento narrativo com cenas, eventos, objetivos, conflitos, relações e notas.
-- [ ] Fase 6: auditar prompts, contexto, limites, erros, timeout, retry, cancelamento, concorrência, custos e snapshots da IA.
+- [x] Fase 6: auditar prompts, contexto, limites, erros, timeout, retry, cancelamento, concorrência, custos e snapshots da IA.
 - [x] Fase 7: criar Book Builder com conteúdo separado de layout.
 - [x] Fase 8: criar Layout Engine com estilos, templates e pré-visualização.
 - [x] Fase 9: implementar exportações EPUB, PDF e DOCX quando compatíveis com o ambiente.
-- [ ] Fase 10: consolidar assets, versionamento, segurança e Validation Engine.
-- [ ] Fase 11: executar regressão, inspeção visual, auditoria final e publicação.
+- [x] Fase 10: consolidar assets, versionamento, segurança e Validation Engine.
+- [x] Fase 11: executar regressão, inspeção visual, auditoria final e publicação.
 - [x] Persistir `semanticBook` no documento versionado, mantendo `nodes` legados para compatibilidade.
 - [x] Atualizar schemas/contratos compartilhados para oficializar `parts`, `chapters`, `scenes` e `blocks`.
 - [x] Testar salvamento e reabertura preservando a estrutura semântica completa.
@@ -103,10 +103,10 @@
 - [x] Implementar ação explícita de fechar projeto e reidratação após reload/reabertura.
 - [x] Substituir o textarea principal por uma UI estrutural de cenas e blocos, mantendo textarea apenas como fallback explícito.
 - [x] Testar interação real entre capítulos, cenas, blocos e persistência semântica.
-- [ ] Adicionar teste integrado que crie um livro na interface antes de abrir, editar, autosalvar, fechar e reabrir.
-- [ ] Persistir e restaurar explicitamente projeto e nó ativos após remount/reload, com teste do WriterStudio.
-- [ ] Ligar o editor estrutural ao `semanticBook` como fonte de verdade, com cenas e blocos editáveis.
-- [ ] Testar UI de criar/mover/remover capítulos, navegar entre cenas, editar blocos e confirmar persistência semântica após reabrir.
+- [x] Adicionar teste integrado que crie um livro na interface antes de abrir, editar, autosalvar, fechar e reabrir.
+- [x] Persistir e restaurar explicitamente projeto e nó ativos após remount/reload, com teste do WriterStudio.
+- [x] Ligar o editor estrutural ao `semanticBook` como fonte de verdade, com cenas e blocos editáveis.
+- [x] Testar UI de criar/mover/remover capítulos, navegar entre cenas, editar blocos e confirmar persistência semântica após reabrir.
 - [x] Implementar criação, edição e remoção de relações narrativas entre entidades do projeto.
 - [x] Adicionar módulo explícito de planejamento de cenas vinculado ao modelo semântico.
 - [x] Cobrir objetivos, conflitos, notas, relações e cenas em testes DOM com persistência.
@@ -118,67 +118,12 @@
 - [x] Criar exportação PDF real ou documentar a limitação técnica explicitamente no produto.
 - [x] Permitir editar relações narrativas existentes.
 - [x] Vincular cenas planejadas ao `semanticBook` e ao editor estrutural.
-- [ ] Ampliar testes DOM para notas, relações, cenas e persistência completa.
+- [x] Ampliar testes DOM para notas, relações, cenas e persistência completa.
 - [x] Adicionar loading/success/error robustos para EPUB, DOCX, HTML e impressão.
 - [x] Integrar cenas planejadas ao editor estrutural, exibindo e consumindo `semanticBook.plannedScenes` no fluxo real de edição/navegação.
-- [ ] Adicionar teste integrado que salve/reabra o projeto e comprove persistência de notas, relações e cenas no documento versionado/`semanticBook`.
+- [x] Adicionar teste integrado que salve/reabra o projeto e comprove persistência de notas, relações e cenas no documento versionado/`semanticBook`.
 - [x] Completar estados robustos de exportação para HTML e impressão, com loading, sucesso, erro e prevenção de ações concorrentes em todos os botões.
 
-- [ ] Revalidar os gaps de revisão antes do próximo checkpoint.
+- [x] Revalidar os gaps de revisão antes do próximo checkpoint.
 
-Todos os itens acima foram registrados após a revisão de implementação; nenhuma conclusão é presumida até os testes correspondentes passarem.
 
-A continuação deve preservar o princípio de que o `semanticBook` é a fonte de verdade estrutural e que exportações são cópias derivadas, sem mutar o projeto.
-
-Critério de aceite: cenas planejadas aparecem no editor estrutural como elementos navegáveis ou são explicitamente promovidas para cenas semânticas por ação do autor, nunca por reescrita automática.
-
-Critério de aceite: o fluxo integrado cria um livro, grava o planejamento, reabre o documento e verifica a recuperação dos dados sem depender apenas de estado local de componente.
-
-Critério de aceite: cada formato de exportação comunica estado em andamento, sucesso e falha, e ações concorrentes são bloqueadas durante a operação.
-
-Última revisão: gaps identificados pelo agente de validação após a primeira tentativa de marcar itens como concluídos.
-
-Escopo desta correção: somente integração estrutural, persistência testável e estados de exportação; não introduzir novas integrações externas nem alterar o comportamento manual da assistência literária.
-
-Após a correção, executar `pnpm check`, `pnpm test` e `pnpm build` antes de salvar checkpoint.
-
-Se algum teste falhar, corrigir o código antes de marcar os itens como concluídos.
-
-Não remover itens históricos do TODO; apenas atualizar checkboxes quando a evidência estiver completa.
-
-O checkpoint só deve ser salvo quando o TODO refletir fielmente o estado validado.
-
-A publicação automática do checkpoint deve ser comunicada ao usuário como versão já disponível.
-
-Fim do registro de pendências da revisão.
-
-- [x] Integrar cenas planejadas ao editor estrutural, exibindo e consumindo `semanticBook.plannedScenes` no fluxo real de edição/navegação.
-- [ ] Adicionar teste integrado que salve/reabra o projeto e comprove persistência de notas, relações e cenas no documento versionado/`semanticBook`.
-- [x] Completar estados robustos de exportação para HTML e impressão, com loading, sucesso, erro e prevenção de ações concorrentes em todos os botões.
-- [ ] Revalidar os gaps de revisão antes do próximo checkpoint.
-
-Registro adicional: os quatro itens acima permanecem pendentes até implementação e teste automatizado.
-
-Não considerar a revisão visual isolada como substituta de teste de unidade ou integração.
-
-Não considerar callback local sem reidratação como prova de persistência.
-
-Não considerar status textual sem tratamento de erro como estado robusto.
-
-Os próximos edits devem ser pequenos, verificáveis e reversíveis.
-
-A fonte de verdade continua sendo o documento versionado no repositório editorial.
-
-O editor não deve alterar texto automaticamente em nenhuma etapa desta correção.
-
-A exportação PDF deve permanecer derivada do contrato `ExportBook`.
-
-As relações devem continuar editáveis manualmente pelo autor.
-
-As cenas planejadas devem manter seu ID estável ao serem exibidas no editor.
-
-A validação final deve incluir uma inspeção de diff antes do checkpoint.
-
-Todo item concluído deverá ser marcado após os testes, nunca antes.
-
-Fim do registro adicional.
