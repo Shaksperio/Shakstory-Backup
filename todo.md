@@ -81,3 +81,18 @@
 - [x] Persistir próximos passos do projeto no documento editorial sem editar capítulos.
 - [x] Cobrir em teste a sequência Biblioteca → Projeto → Planejar → Manuscrito → Preparar.
 - [x] Capturar e registrar evidência visual da navegação interna autenticada/mockada.
+
+# ShakStory 1.1 — Plano mestre
+
+- [x] Fase 0: produzir auditoria de engenharia do estado atual e fila de correções.
+- [x] Fase 1: formalizar Writing, Story, Book, Layout, EPUB, PDF, DOCX, AI, Project, Asset, Version e Validation Engines.
+- [ ] Fase 2: consolidar o modelo semântico Book → Parts → Chapters → Scenes → Blocks.
+- [ ] Fase 3: automatizar abrir, criar, salvar, fechar, reabrir, autosave e recuperação do projeto.
+- [ ] Fase 4: evoluir o editor além de textarea, com estrutura semântica e testes de interação.
+- [ ] Fase 5: ampliar planejamento narrativo com cenas, eventos, objetivos, conflitos, relações e notas.
+- [ ] Fase 6: auditar prompts, contexto, limites, erros, timeout, retry, cancelamento, concorrência, custos e snapshots da IA.
+- [ ] Fase 7: criar Book Builder com conteúdo separado de layout.
+- [ ] Fase 8: criar Layout Engine com estilos, templates e pré-visualização.
+- [ ] Fase 9: implementar exportações EPUB, PDF e DOCX quando compatíveis com o ambiente.
+- [ ] Fase 10: consolidar assets, versionamento, segurança e Validation Engine.
+- [ ] Fase 11: executar regressão, inspeção visual, auditoria final e publicação.
