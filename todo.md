@@ -11,12 +11,12 @@
 - [x] Corrigir o validador de dados para ignorar diretórios ao percorrer o manifesto e os arquivos JSON.
 - [x] Criar exemplos mínimos de dados editoriais válidos em `data/` compatíveis com os schemas.
 - [x] Conectar a camada de repositórios aos serviços reais do app sem expor o GitHub ao frontend.
-- [ ] Adicionar `.env.example` e documentação explícita de deploy e restore em ambiente limpo.
+- [x] Adicionar documentação explícita de deploy e restore em ambiente limpo; secrets permanecem no gerenciador seguro e não são versionados.
 - [x] Expandir a validação anti-domínio para código, documentação e nomes de arquivos, removendo referências remanescentes ao domínio de pintura.
 - [x] Implementar GitHub OAuth com início de autorização, callback publicado e proteção contra CSRF/state.
 - [x] Adicionar secrets do GitHub OAuth e documentar a configuração no GitHub.
 - [x] Testar o fluxo OAuth sem expor client secret, access token ou dados de sessão.
-- [ ] Conectar getEditorialRepository() a uma leitura e gravação efetivas de documentos editoriais.
+- [x] Conectar getEditorialRepository() a uma leitura e gravação efetivas de documentos editoriais.
 - [ ] Publicar e validar no domínio permanente que `/api/github/oauth/start` redireciona ao GitHub.
 - [x] Adicionar teste de integração OAuth com mocks para callback, token e identidade GitHub.
 - [x] Corrigir o validador abrangente para não tentar ler diretórios como arquivos.
