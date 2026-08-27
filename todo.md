@@ -210,11 +210,33 @@
 
 ## Etapa futura — proteção antivírus com KicomAV
 
-- [ ] Auditar e fixar uma versão/revisão do KicomAV, licença MIT, dependências Python/YARA e política de atualização de assinaturas.
-- [ ] Definir arquitetura isolada do scanner, preferencialmente worker/serviço separado, sem executar arquivos enviados no processo Node nem expor daemon diretamente à internet.
+- [x] Auditar e fixar para avaliação a revisão KicomAV `bad9493`, licença MIT, dependências Python/YARA e política de atualização de assinaturas; ativação produtiva ainda depende da etapa de implementação.
+- [x] Definir arquitetura isolada do scanner em worker/serviço separado, sem executar arquivos enviados no processo Node nem expor daemon diretamente à internet.
 - [ ] Implementar varredura de uploads antes de persistir/servir arquivos, com limites de tamanho, timeout, tipos permitidos, proteção contra arquivos compactados abusivos e validação de caminhos.
-- [ ] Implementar estados seguro, infectado, falha e pendente, quarentena imutável e retenção mínima de metadados sem armazenar conteúdo malicioso no banco.
-- [ ] Integrar autenticação entre Shakstory e KicomAV por segredo server-side, rede privada/Unix socket ou mTLS, nunca no frontend.
-- [ ] Criar trilha de auditoria, alertas, métricas e política de fail-closed para arquivos não verificados, sem bloquear o autosave textual seguro.
+- [x] Implementar estados clean/infected/error/timeout/pending, registro de metadados de quarentena e fail-closed sem armazenar conteúdo malicioso no banco; quarentena física de bytes permanece desativada por desenho.
+- [x] Integrar Shakstory e KicomAV por processo worker local server-side, sem rede externa nem credencial no frontend.
+- [x] Criar trilha inicial de auditoria por metadados e política fail-closed para arquivos não verificados, sem bloquear o autosave textual seguro; alertas e métricas avançadas permanecem pendentes.
 - [ ] Cobrir testes com arquivos de teste controlados, incluindo arquivo limpo, detecção conhecida do scanner, arquivo inválido, timeout, limite excedido, archive bomb e falha do serviço.
 - [ ] Executar análise de dependências, revisão de licença, benchmark de custo/latência e validação de recuperação antes de ativar a proteção em produção.
+
+
+## Implementação aprovada — gateway privado KicomAV
+
+- [x] Criar contrato server-side `clean/infected/error/timeout/pending` para o worker local KicomAV, com timeout e limite de resposta; não há cliente HTTP externo.
+- [x] Remover a exigência de secrets externos `KICOMAV_BASE_URL`/`KICOMAV_API_KEY`; o worker local usa apenas o interpretador interno e diagnóstico server-side.
+- [x] Integrar o worker local ao upload de capa antes de `storagePut`, sem alterar autosave textual ou metadados editoriais seguros.
+- [x] Implementar retenção de metadados de varredura e política fail-closed para arquivos não limpos, sem salvar conteúdo malicioso no banco; bytes não são retidos.
+- [ ] Adicionar testes unitários e de integração para clean, infected, erro HTTP, timeout, arquivo acima do limite, resposta inválida e ausência de configuração.
+- [x] Validar typecheck, suíte, build, diff e worker; não há segredo KicomAV no cliente.
+
+
+## Revisão de arquitetura — KicomAV interno por sessão
+
+- [x] Remover a dependência obrigatória de `KICOMAV_BASE_URL` e `KICOMAV_API_KEY` externos do plano de integração.
+- [x] Fixar o KicomAV como engine interno/worker local do aplicativo, com contrato server-side e sem exposição direta ao navegador.
+- [x] Gerar credencial efêmera e revogável por sessão de login, armazenando somente hash e metadados operacionais.
+- [x] Criar relatório do proprietário com prefixo, sessão, criação, último uso, estado, projeto/base lógica e revogação sem exibir segredo bruto.
+- [x] Implementar rotação manual de credencial, exclusão/revogação e regeneração segura após migração de pasta/projeto.
+- [x] Definir URL base lógica derivada do projeto/ambiente para diagnóstico/migração, sem tratá-la como endpoint público do KicomAV.
+- [x] Integrar o worker ao upload com estados de segurança, limite, timeout e fail-closed; a retenção de bytes em quarentena permanece desativada por desenho.
+- [ ] Cobrir login, logout, rotação, revogação, migração, isolamento, uploads limpos/infectados e falhas do worker em testes QA isolados.

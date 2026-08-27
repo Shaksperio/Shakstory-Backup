@@ -25,4 +25,33 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+export const antivirusSessions = mysqlTable("antivirus_sessions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  tokenHash: varchar("tokenHash", { length: 128 }).notNull().unique(),
+  tokenPrefix: varchar("tokenPrefix", { length: 24 }).notNull(),
+  sessionFingerprint: varchar("sessionFingerprint", { length: 128 }).notNull(),
+  projectBaseUrl: varchar("projectBaseUrl", { length: 512 }).notNull(),
+  status: mysqlEnum("status", ["active", "revoked"]).default("active").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  lastUsedAt: timestamp("lastUsedAt"),
+  revokedAt: timestamp("revokedAt"),
+});
+
+export type AntivirusSession = typeof antivirusSessions.$inferSelect;
+export type InsertAntivirusSession = typeof antivirusSessions.$inferInsert;
+
+export const antivirusScans = mysqlTable("antivirus_scans", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  filename: varchar("filename", { length: 160 }).notNull(),
+  sha256: varchar("sha256", { length: 64 }),
+  status: mysqlEnum("status", ["clean", "infected", "error", "timeout", "pending"]).notNull(),
+  malwareName: varchar("malwareName", { length: 255 }),
+  detail: text("detail"),
+  engine: varchar("engine", { length: 64 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AntivirusScan = typeof antivirusScans.$inferSelect;
+export type InsertAntivirusScan = typeof antivirusScans.$inferInsert;

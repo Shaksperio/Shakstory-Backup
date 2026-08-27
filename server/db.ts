@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, antivirusScans, users } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,24 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function recordAntivirusScan(input: {
+  userId: number;
+  filename: string;
+  sha256?: string;
+  status: "clean" | "infected" | "error" | "timeout" | "pending";
+  malwareName?: string;
+  detail?: string;
+  engine: string;
+}): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await db.insert(antivirusScans).values({
+    userId: input.userId,
+    filename: input.filename,
+    sha256: input.sha256,
+    status: input.status,
+    malwareName: input.malwareName,
+    detail: input.detail,
+    engine: input.engine,
+  });
+}

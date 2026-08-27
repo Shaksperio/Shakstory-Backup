@@ -9,6 +9,10 @@ import { RepositoryConflictError } from "../backend/src/repositories/types";
 import { analyzeLiteraryText, listLiteraryModels, literaryAnalysisInputSchema } from "./literary-analysis";
 import { getSyncSnapshot, markSyncConflict, markSyncFailed, markSyncStarted, markSyncSucceeded } from "./sync-state";
 import { storagePut } from "./storage";
+import { recordAntivirusScan } from "./db";
+import { isSafeToPersist, scanWithLocalKicomAV } from "./antivirus";
+import { ENV } from "./_core/env";
+import { createProjectBaseUrl, ensureAntivirusSession, fingerprintSession, listAntivirusSessions, revokeAntivirusSession, rotateAntivirusSessions } from "./antivirus-sessions";
 
 const documentPath = z.string().regex(/^[a-z0-9][a-z0-9/_-]*\.json$/i, "Caminho de documento inválido.");
 const scopedPath = (ownerId: number, path: string) => `authors/${ownerId}/${path}`;
@@ -16,11 +20,40 @@ const scopedPath = (ownerId: number, path: string) => `authors/${ownerId}/${path
 export const appRouter = router({
   system: systemRouter,
   auth: router({
-    me: publicProcedure.query(opts => opts.ctx.user),
+    me: publicProcedure.query(async opts => {
+      if (opts.ctx.user) {
+        try {
+          await ensureAntivirusSession({
+            userId: opts.ctx.user.id,
+            sessionFingerprint: fingerprintSession(opts.ctx.req.headers.cookie),
+            projectBaseUrl: createProjectBaseUrl(opts.ctx.req),
+          });
+        } catch (error) {
+          console.error("[Antivirus] Não foi possível registrar a sessão sem bloquear o login:", error);
+        }
+      }
+      return opts.ctx.user;
+    }),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
+    }),
+  }),
+  security: router({
+    antivirus: router({
+      sessions: protectedProcedure.query(({ ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.openId !== ENV.ownerOpenId) throw new TRPCError({ code: "FORBIDDEN", message: "O relatório antivírus é exclusivo do proprietário." });
+        return listAntivirusSessions(ctx.user.id);
+      }),
+      revoke: protectedProcedure.input(z.object({ id: z.number().int().positive() })).mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== "admin" && ctx.user.openId !== ENV.ownerOpenId) throw new TRPCError({ code: "FORBIDDEN", message: "Somente o proprietário pode gerenciar credenciais antivírus." });
+        return { revoked: await revokeAntivirusSession(ctx.user.id, input.id) };
+      }),
+      rotate: protectedProcedure.mutation(async ({ ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.openId !== ENV.ownerOpenId) throw new TRPCError({ code: "FORBIDDEN", message: "Somente o proprietário pode renovar credenciais antivírus." });
+        return rotateAntivirusSessions(ctx.user.id, createProjectBaseUrl(ctx.req));
+      }),
     }),
   }),
   literaryAssist: router({
@@ -41,6 +74,11 @@ export const appRouter = router({
       try {
         const bytes = Buffer.from(input.base64, "base64");
         if (bytes.length > 8 * 1024 * 1024) throw new Error("A capa deve ter no máximo 8 MB.");
+        const scan = await scanWithLocalKicomAV({ bytes, filename: input.filename, contentType: input.contentType });
+        await recordAntivirusScan({ userId: ctx.user.id, filename: input.filename, sha256: scan.sha256, status: scan.status, malwareName: scan.malwareName, detail: scan.detail, engine: scan.engine });
+        if (!isSafeToPersist(scan)) {
+          throw new Error(scan.status === "infected" ? `A capa foi colocada em quarentena: ${scan.malwareName ?? "ameaça detectada"}.` : `A capa não foi armazenada porque a verificação antivírus falhou (${scan.status}).`);
+        }
         return await storagePut(`authors/${ctx.user.id}/covers/${input.filename}`, bytes, input.contentType);
       } catch (error) {
         throw new TRPCError({ code: "BAD_GATEWAY", message: error instanceof Error ? `Não foi possível armazenar a capa: ${error.message}` : "Não foi possível armazenar a capa." });
