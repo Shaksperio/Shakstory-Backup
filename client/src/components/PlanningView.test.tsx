@@ -4,7 +4,8 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { PlanningView } from "./WriterStudio";
 
-type Planning = { characters: Array<{ id: string; name: string; role: string; notes: string }>; locations: Array<{ id: string; name: string; atmosphere: string; notes: string }>; timeline: Array<{ id: string; title: string; date: string; description: string }> };
+type EditorialStatus = "planning" | "draft" | "editing" | "revision" | "completed";
+type Planning = { characters: Array<{ id: string; name: string; role: string; notes: string; status?: EditorialStatus }>; locations: Array<{ id: string; name: string; atmosphere: string; notes: string; status?: EditorialStatus }>; timeline: Array<{ id: string; title: string; date: string; description: string; status?: EditorialStatus }> };
 
 let currentPlanning: Planning;
 
@@ -43,5 +44,17 @@ describe("PlanningView", () => {
     expect(currentPlanning.characters[0].id).toBe(characterId);
     expect(currentPlanning.locations[0].id).toBe(locationId);
     expect(currentPlanning.timeline[0].id).toBe(timelineId);
+
+    fireEvent.click(screen.getByText("Personagens", { exact: true }));
+    fireEvent.click(screen.getByRole("button", { name: "Editar" }));
+    fireEvent.change(screen.getByPlaceholderText("Função na história"), { target: { value: "Protagonista revisada" } });
+    fireEvent.change(screen.getByLabelText("Status"), { target: { value: "completed" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar alterações" }));
+    expect(currentPlanning.characters[0].id).toBe(characterId);
+    expect(currentPlanning.characters[0].role).toBe("Protagonista revisada");
+    expect(currentPlanning.characters[0].status).toBe("completed");
+    fireEvent.click(screen.getByRole("button", { name: "Excluir Lia" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar exclusão" }));
+    expect(screen.queryByText("Lia")).toBeNull();
   });
 });

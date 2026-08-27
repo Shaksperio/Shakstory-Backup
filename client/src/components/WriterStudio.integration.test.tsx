@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import React from "react";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const harness = vi.hoisted(() => {
@@ -27,6 +27,7 @@ import WriterStudio from "./WriterStudio";
 
 describe("WriterStudio integrated literary assistance", () => {
   beforeEach(() => {
+    cleanup();
     vi.clearAllMocks();
     localStorage.clear();
   });
@@ -51,7 +52,7 @@ describe("WriterStudio integrated literary assistance", () => {
 
   it("sends the draft only after analysis is requested and applies the returned suggestion manually", async () => {
     render(<WriterStudio />);
-    fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Continuar Caderno" }));
     expect(await screen.findByText("Projeto do livro")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
     const editor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
@@ -91,7 +92,7 @@ describe("WriterStudio integrated literary assistance", () => {
     await new Promise(resolve => setTimeout(resolve, 950));
     const bibliotecaButtons = screen.getAllByRole("button", { name: "Biblioteca" });
     fireEvent.click(bibliotecaButtons[bibliotecaButtons.length - 1]);
-    fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Continuar Caderno" }));
     fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
     const reopenedEditor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
     expect(reopenedEditor.textContent).toBe("A tarde caiu. A cidade acordou. Fonte");
@@ -107,5 +108,34 @@ describe("WriterStudio integrated literary assistance", () => {
     expect(await screen.findByRole("textbox", { name: "Editar bloco 1" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Preparar" }));
     expect(await screen.findByText("Preparação editorial")).toBeTruthy();
+  });
+
+  it("exposes contextual navigation and protected library CRUD actions", async () => {
+    render(<WriterStudio />);
+    expect(screen.getByRole("button", { name: "Abrir menu de navegação" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Abrir menu de navegação" }));
+    expect(screen.getByRole("dialog", { name: "Menu de navegação" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Fechar menu" }));
+    expect(screen.getByText("ISBN não informado")).toBeTruthy();
+    expect(screen.getByText("páginas")).toBeTruthy();
+    expect(screen.getByText("caracteres")).toBeTruthy();
+    expect(screen.getByText("edição")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Editar livro" }));
+    fireEvent.change(screen.getByLabelText("Título"), { target: { value: "Caderno revisado" } });
+    fireEvent.change(screen.getByLabelText("Autor"), { target: { value: "Autora QA" } });
+    fireEvent.change(screen.getByLabelText("ISBN"), { target: { value: "978-qa" } });
+    fireEvent.change(screen.getByLabelText("Status editorial"), { target: { value: "completed" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar alterações" }));
+    expect(await screen.findByText("Caderno revisado")).toBeTruthy();
+    expect(screen.getByText("Autora QA")).toBeTruthy();
+    expect(screen.getByText("ISBN 978-qa")).toBeTruthy();
+    expect(screen.getByText("Concluído")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Zerar Caderno revisado" }));
+    expect(screen.getByRole("heading", { name: "Zerar história?" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Confirmar zerar" }));
+    expect(await screen.findByText("Projeto do livro")).toBeTruthy();
+    expect(screen.getByText("Planejamento")).toBeTruthy();
   });
 });

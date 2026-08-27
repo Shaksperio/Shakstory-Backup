@@ -17,19 +17,19 @@ describe("StoryEnginePanel", () => {
     expect(story.objectives[0].title).toBe("A protagonista quer voltar para casa");
 
     rerender(<StoryEnginePanel story={story} onUpdate={onUpdate} />);
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "conflicts" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Tipo de elemento" }), { target: { value: "conflicts" } });
     fireEvent.change(screen.getByPlaceholderText("O que está em tensão?"), { target: { value: "A cidade não permite a partida" } });
     fireEvent.click(screen.getByRole("button", { name: "Adicionar ao projeto" }));
     expect(story.conflicts[0].title).toBe("A cidade não permite a partida");
 
     rerender(<StoryEnginePanel story={story} onUpdate={onUpdate} />);
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "notes" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Tipo de elemento" }), { target: { value: "notes" } });
     fireEvent.change(screen.getByPlaceholderText("Uma nota para manter por perto"), { target: { value: "Revisar o símbolo da ponte" } });
     fireEvent.click(screen.getByRole("button", { name: "Adicionar ao projeto" }));
     expect(story.notes).toContain("Revisar o símbolo da ponte");
 
     rerender(<StoryEnginePanel story={story} onUpdate={onUpdate} />);
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "relations" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Tipo de elemento" }), { target: { value: "relations" } });
     fireEvent.change(screen.getByPlaceholderText("Tipo de relação"), { target: { value: "aliança" } });
     fireEvent.change(screen.getByPlaceholderText("Origem: personagem, lugar ou evento"), { target: { value: "Lia" } });
     fireEvent.change(screen.getByPlaceholderText("Destino: personagem, lugar ou evento"), { target: { value: "Ponte" } });
@@ -42,7 +42,7 @@ describe("StoryEnginePanel", () => {
     expect(story.relations[0].label).toBe("proteção");
 
     rerender(<StoryEnginePanel story={story} onUpdate={onUpdate} />);
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "scenes" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Tipo de elemento" }), { target: { value: "scenes" } });
     fireEvent.change(screen.getByPlaceholderText("Título da cena"), { target: { value: "A travessia" } });
     fireEvent.change(screen.getByPlaceholderText("Objetivo da cena"), { target: { value: "Chegar ao outro lado" } });
     fireEvent.change(screen.getByPlaceholderText("Conflito ou virada"), { target: { value: "A ponte cede" } });

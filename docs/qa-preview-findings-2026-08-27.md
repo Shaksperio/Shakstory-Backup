@@ -19,3 +19,8 @@ A captura desktop do preview mostrou o tema clássico com superfícies de papel 
 ## Semântica de identidade editorial
 
 `versionId` identifica a versão corrente do documento `library.json` no fallback/local e acompanha a persistência do documento. Ele não deve ser interpretado como um histórico de snapshots. O histórico operacional do repositório continua sendo representado pelo SHA remoto quando disponível; uma linha do tempo de snapshots por edição permanece fora do escopo desta iteração.
+
+
+## Auditoria visual da Biblioteca — 2026-08-27
+
+O preview local mostrou um cabeçalho compacto com gatilho de menu à esquerda, navegação direta apenas em telas largas e conteúdo principal sem sobreposição permanente. Em desktop, a Biblioteca apresenta hierarquia clara, busca alinhada à seção de projetos e estado vazio legível. Em mobile de 390 px, o título, descrição, CTA, cards de estatísticas, busca e estado vazio refluem em uma coluna sem overflow horizontal visível. A validação de cartões com livros reais, abertura do menu, diálogos destrutivos e fluxo autenticado continua dependente de sessão autenticada; os testes QA isolados cobrem esses estados sem dados editoriais do autor.

@@ -195,3 +195,14 @@
 - [x] Definir/documentar que `versionId` representa apenas a versão corrente do documento; snapshots históricos reais permanecem fora do escopo.
 - [x] Cobrir criação pela UI de personagens, locais, cenas e notas seguida de atualização/reabertura do estado com IDs preservados; PlanningView e StoryEnginePanel usam harnesses QA isolados.
 - [x] Adicionar testes explícitos para desfazer/refazer e contagem do editor rico.
+
+
+## Solicitação 2026-08-27 — biblioteca, navegação e CRUD editorial
+
+- [x] Reestruturar o menu como navegação contextual retrátil/drawer, sem ocupar a área útil do editor.
+- [x] Exibir na Biblioteca os últimos livros com nome/título, autor, ISBN, status editorial, páginas, capítulos, caracteres e tempo de edição.
+- [x] Implementar ações da Biblioteca: editar livro, continuar de onde parou, resetar história com confirmação explícita, excluir com confirmação explícita e exportar em PDF, EPUB, DOCX, TXT e formatos compatíveis.
+- [x] Implementar CRUD completo de livros com edição de metadados, status planejamento/rascunho/em edição/revisão/concluído e preservação de UUID.
+- [x] Implementar CRUD completo de personagens, locais, eventos, cenas, notas e relações, com editar, excluir, status e IDs estáveis.
+- [x] Cobrir persistência/reabertura dos CRUDs e métricas derivadas com testes QA isolados, sem usar livros reais.
+- [x] Validar desktop/mobile, teclado, foco, diálogos destrutivos, console, rede, servidor e build antes do checkpoint; o fluxo autenticado do preview permanece explicitamente bloqueado pela ausência de login manual.
