@@ -15,3 +15,7 @@ A tela autenticada foi visualizada pelo preview gerenciado; a sessão do navegad
 ## Revisão adicional — 27/08/2026
 
 A captura desktop do preview mostrou o tema clássico com superfícies de papel quente, tipografia serifada, acento violeta e navegação legível. A estrutura permanece utilizável em largura desktop. Entretanto, a consulta autenticada `data.get` retornou documento remoto sem livros, e a Biblioteca exibiu zero projetos. Como não foi possível concluir a interação de login pelo navegador de teste nesta sessão, o fluxo completo de criação, gravação remota, reload e exportação continua pendente de validação manual autenticada. Esse achado não deve ser tratado como confirmação de perda de dados: é uma evidência de que a recuperação remota precisa ser exercitada com um projeto QA e uma sessão autenticada.
+
+## Semântica de identidade editorial
+
+`versionId` identifica a versão corrente do documento `library.json` no fallback/local e acompanha a persistência do documento. Ele não deve ser interpretado como um histórico de snapshots. O histórico operacional do repositório continua sendo representado pelo SHA remoto quando disponível; uma linha do tempo de snapshots por edição permanece fora do escopo desta iteração.

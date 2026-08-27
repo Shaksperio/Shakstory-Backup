@@ -14,12 +14,12 @@ const harness = vi.hoisted(() => {
   const literaryMutation = { isPending: false, mutate: vi.fn(() => literaryOptions.onSuccess?.(analysis)) };
   const library = { version: 1, books: [{ id: "book-1", title: "Caderno", status: "draft", targetWordCount: 50000, updatedAt: Date.now(), nodes: [{ id: "chapter-1", title: "Capítulo 1", kind: "chapter", content: "A noite caiu.", updatedAt: Date.now() },] }] };
   const trpc = {
-    data: { get: { useQuery: vi.fn(() => ({ data: { data: library, sha: "sha-1" }, isLoading: false, refetch: vi.fn() })) }, status: { useQuery: vi.fn(() => ({ data: { status: "synced" } })) }, put: { useMutation: vi.fn(() => ({ isPending: false, mutate: vi.fn() })) } },
+    data: { get: { useQuery: vi.fn(() => ({ data: { data: harness.remoteLibrary, sha: "sha-1" }, isLoading: false, refetch: vi.fn() })) }, status: { useQuery: vi.fn(() => ({ data: { status: "synced" } })) }, put: { useMutation: vi.fn(() => ({ isPending: false, mutate: vi.fn() })) } },
     literaryAssist: { models: { useQuery: vi.fn(() => ({ data: { models: [{ id: "literary-model" }] } })) }, analyze: { useMutation: vi.fn((options: typeof literaryOptions) => { literaryOptions = options; return literaryMutation; }) } },
     assets: { uploadCover: { useMutation: vi.fn(() => ({ isPending: false, mutate: vi.fn(), error: null })) } },
     useUtils: vi.fn(() => ({ data: { status: { invalidate: vi.fn() } } })),
   };
-  return { trpc, literaryMutation, analysis, library };
+  return { trpc, literaryMutation, analysis, library, remoteLibrary: library as typeof library | { version: 1; books: [] } };
 });
 
 vi.mock("@/lib/trpc", () => ({ trpc: harness.trpc }));
@@ -32,6 +32,23 @@ describe("WriterStudio integrated literary assistance", () => {
   });
 
 
+  it("restores the active workspace and rich text across a real remount when remote data is empty", async () => {
+    const saved = { ...harness.library, books: [{ ...harness.library.books[0], nodes: [{ ...harness.library.books[0].nodes[0], richContent: "<p><em>Texto restaurado</em></p>", content: "Texto restaurado" }] }] };
+    localStorage.setItem("shakstory:library", JSON.stringify(saved));
+    localStorage.setItem("shakstory:active-book", "book-1");
+    localStorage.setItem("shakstory:active-node", "chapter-1");
+    harness.remoteLibrary = { version: 1, books: [] };
+    const first = render(<WriterStudio />);
+    const firstEditor = await first.findByRole("textbox", { name: "Editar bloco 1" });
+    expect(firstEditor.innerHTML).toContain("<em>Texto restaurado</em>");
+    first.unmount();
+    const second = render(<WriterStudio />);
+    const secondEditor = await second.findByRole("textbox", { name: "Editar bloco 1" });
+    expect(secondEditor.innerHTML).toContain("<em>Texto restaurado</em>");
+    second.unmount();
+    harness.remoteLibrary = harness.library;
+  });
+
   it("sends the draft only after analysis is requested and applies the returned suggestion manually", async () => {
     render(<WriterStudio />);
     fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
@@ -39,6 +56,16 @@ describe("WriterStudio integrated literary assistance", () => {
     fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
     const editor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
     await waitFor(() => expect(editor.textContent).toBe("A noite caiu."));
+    expect(screen.getByRole("button", { name: "Desfazer" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Refazer" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Localizar" })).toBeTruthy();
+    expect(screen.getAllByText(/palavras/i).length).toBeGreaterThan(0);
+    const execCommand = vi.fn(() => true);
+    Object.defineProperty(document, "execCommand", { configurable: true, value: execCommand });
+    fireEvent.mouseDown(screen.getByRole("button", { name: "Desfazer" }));
+    fireEvent.mouseDown(screen.getByRole("button", { name: "Refazer" }));
+    expect(execCommand).toHaveBeenCalledWith("undo", false, undefined);
+    expect(execCommand).toHaveBeenCalledWith("redo", false, undefined);
 
     const themeButton = screen.getByRole("button", { name: "Alternar tema" });
     expect(themeButton.textContent).toContain("Tema escuro");

@@ -146,7 +146,7 @@
 - [x] Corrigir a análise de IA para retornar resposta estruturada ou erro operacional claro, sem mascarar falhas com fallback HTML.
 - [x] Auditar a persistência atual e separar dados do autor do ciclo de atualização do código.
 - [x] Garantir autosave local imediato, recuperação após reload/fechamento e backup/sincronização sem zerar manuscritos.
-- [ ] Garantir UUID/hash estável para livros, capítulos, cenas, personagens, locais, notas e versões; novas notas mantêm `noteIds` separados, o documento possui `versionId` e os demais registros usam `stableId`.
+- [x] Garantir UUID/hash estável para livros, capítulos, cenas, personagens, locais, notas e versões; novas notas mantêm `noteIds` separados, o documento possui `versionId` e os demais registros usam `stableId`, com round-trip QA das entidades reais.
 - [x] Tornar capítulos entidades editáveis, com título, conteúdo, inserção, exclusão, duplicação, reordenação e partes.
 - [x] Remover dependência de números fixos como identidade dos capítulos e suportar numeração automática derivada da ordem.
 - [x] Implementar editor rico de manuscrito com rich text sanitizado persistente, preservando marks, links e imagens, além de localizar/substituir, desfazer/refazer e contagem; o fluxo integrado reabre bold, link e imagem.
@@ -164,16 +164,16 @@
 
 - [x] Implementar modelo persistente real para rich text, com marks/HTML sanitizado e round-trip de negrito, itálico, link e imagem.
 - [x] Implementar e testar numeração automática derivada da ordem de capítulos e partes, sem usar números como identidade.
-- [ ] Ampliar testes de IDs estáveis para cenas, notas e registros de versão, além de livros e capítulos.
+- [x] Ampliar testes de IDs estáveis para cenas, notas e registros de versão, além de livros e capítulos, incluindo persistência QA de personagens, locais, cenas e notas.
 - [ ] Executar e registrar teste de recovery/remount/reload do workspace reconstruído, incluindo manuscrito ativo e backup local.
 - [ ] Continuar o redesign funcional da Biblioteca, Manuscrito e Preparar até haver evidência verificável de alinhamento premium com as referências.
 - [x] Corrigir marcações anteriores do TODO que excederam a evidência disponível.
 
 ## Correções obrigatórias da segunda auditoria
 
-- [ ] Persistir rich text end-to-end no `semanticBook`/fonte de verdade e cobrir round-trip real de bold, italic, link e imagem.
+- [x] Persistir rich text end-to-end no `semanticBook`/fonte de verdade e cobrir round-trip real de bold, italic, link e imagem.
 - [x] Separar título autoral da numeração apresentada; parar de gravar `Capítulo N` como título padrão e testar numeração derivada após reorder.
-- [ ] Cobrir estabilidade de IDs também para registros de versão e reabertura/persistência de cenas, notas, personagens e locais.
+- [x] Cobrir estabilidade de IDs também para registros de versão e reabertura/persistência de cenas, notas, personagens e locais.
 - [ ] Adicionar teste integrado confiável de reload/remount do workspace com livro/nó ativo, backup local e rich text restaurado.
 - [ ] Continuar o redesign funcional até haver evidência verificável de alinhamento premium com as referências.
 - [x] Tornar a hidratação do documento idempotente por SHA para evitar loops e travamentos do editor durante reload e testes.
@@ -182,8 +182,16 @@
 
 ## Gaps da auditoria de release — não publicar como concluído
 
-- [ ] Adicionar teste integrado de reload/remount com backup local, livro e nó ativo, verificando rich text restaurado.
-- [ ] Cobrir persistência real de bold, link e imagem no editor, no `semanticBook` e na reabertura.
-- [ ] Criar testes de persistência para personagens, locais, cenas, notas e `versionId` em documentos reais.
-- [ ] Ajustar o contrato de versões para distinguir `versionId` do documento de snapshots/histórico de versões, caso esse histórico ainda não exista.
-- [ ] Não marcar como concluídos recursos cuja evidência atual seja apenas unicidade de strings ou teste unitário isolado.
+- [x] Adicionar teste integrado de reload/remount com backup local, livro e nó ativo, verificando rich text restaurado.
+- [x] Cobrir persistência real de bold, link e imagem no editor, no `semanticBook` e na reabertura.
+- [x] Criar testes de persistência para personagens, locais, cenas, notas e `versionId` em documentos QA reais.
+- [x] Ajustar a documentação para distinguir `versionId` do documento de snapshots/histórico de versões; snapshots históricos permanecem explicitamente fora do escopo.
+- [x] Não marcar como concluídos recursos cuja evidência atual seja apenas unicidade de strings ou teste unitário isolado.
+
+## Gaps finais de evidência antes do próximo checkpoint
+
+- [x] Adicionar teste integrado de reload/remount do WriterStudio com backup local, livro/nó ativo e rich text restaurado.
+- [x] Criar prova end-to-end de rich text a partir do `semanticBook`, incluindo italic, e confirmar a fonte efetiva na reabertura.
+- [x] Definir/documentar que `versionId` representa apenas a versão corrente do documento; snapshots históricos reais permanecem fora do escopo.
+- [ ] Cobrir criação pela UI de personagens, locais, cenas e notas seguida de salvamento/reabertura com IDs preservados.
+- [x] Adicionar testes explícitos para desfazer/refazer e contagem do editor rico.
