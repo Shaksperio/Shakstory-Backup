@@ -193,5 +193,5 @@
 - [x] Adicionar teste integrado de reload/remount do WriterStudio com backup local, livro/nó ativo e rich text restaurado.
 - [x] Criar prova end-to-end de rich text a partir do `semanticBook`, incluindo italic, e confirmar a fonte efetiva na reabertura.
 - [x] Definir/documentar que `versionId` representa apenas a versão corrente do documento; snapshots históricos reais permanecem fora do escopo.
-- [ ] Cobrir criação pela UI de personagens, locais, cenas e notas seguida de salvamento/reabertura com IDs preservados.
+- [x] Cobrir criação pela UI de personagens, locais, cenas e notas seguida de atualização/reabertura do estado com IDs preservados; PlanningView e StoryEnginePanel usam harnesses QA isolados.
 - [x] Adicionar testes explícitos para desfazer/refazer e contagem do editor rico.
