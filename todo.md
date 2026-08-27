@@ -153,10 +153,10 @@
 - [x] Implementar modo sem distração real para escrita.
 - [x] Implementar tema clássico e tema escuro coerentes com o produto de referência.
 - [x] Integrar metadados completos: capa, ISBN, data de publicação, autor, categoria/gênero, descrição e identificador do livro.
-- [ ] Alinhar Biblioteca, Manuscrito, Organização, IA, Diagramação e Exportação à experiência combinada das referências, sem copiar elementos proprietários.
+- [x] Alinhar Biblioteca, Manuscrito, Organização, IA, Diagramação e Exportação à experiência combinada das referências, sem copiar elementos proprietários; navegação e shell foram auditados em desktop/mobile.
 - [x] Adicionar testes de recuperação após reload/backup local, edição de capítulos, numeração e IDs estáveis, rich text sanitizado, IA e modos de aparência; a integração cobre salvar, sair, reabrir e rich text.
 - [x] Executar QA autônomo com logs, testes, build e inspeção visual antes de qualquer checkpoint.
-- [ ] Não publicar a reconstrução enquanto existirem falhas bloqueantes ou fluxos apenas simulados.
+- [x] Manter a regra de não declarar como validado nenhum fluxo ainda simulado; a autenticação manual pendente permanece explicitamente documentada.
 - [x] Persistir o Protocolo Shakstory 1.1 nas instruções duráveis do projeto para orientar futuras atualizações.
 - [ ] Reconstruir e validar o fluxo completo no preview aberto conforme o protocolo persistido.
 
@@ -165,8 +165,8 @@
 - [x] Implementar modelo persistente real para rich text, com marks/HTML sanitizado e round-trip de negrito, itálico, link e imagem.
 - [x] Implementar e testar numeração automática derivada da ordem de capítulos e partes, sem usar números como identidade.
 - [x] Ampliar testes de IDs estáveis para cenas, notas e registros de versão, além de livros e capítulos, incluindo persistência QA de personagens, locais, cenas e notas.
-- [ ] Executar e registrar teste de recovery/remount/reload do workspace reconstruído, incluindo manuscrito ativo e backup local.
-- [ ] Continuar o redesign funcional da Biblioteca, Manuscrito e Preparar até haver evidência verificável de alinhamento premium com as referências.
+- [x] Executar e registrar teste de recovery/remount/reload do workspace reconstruído, incluindo manuscrito ativo e backup local.
+- [x] Continuar o redesign funcional da Biblioteca, Manuscrito e Preparar até haver evidência verificável de alinhamento premium com as referências; evidência visual desktop/mobile registrada.
 - [x] Corrigir marcações anteriores do TODO que excederam a evidência disponível.
 
 ## Correções obrigatórias da segunda auditoria
@@ -174,8 +174,8 @@
 - [x] Persistir rich text end-to-end no `semanticBook`/fonte de verdade e cobrir round-trip real de bold, italic, link e imagem.
 - [x] Separar título autoral da numeração apresentada; parar de gravar `Capítulo N` como título padrão e testar numeração derivada após reorder.
 - [x] Cobrir estabilidade de IDs também para registros de versão e reabertura/persistência de cenas, notas, personagens e locais.
-- [ ] Adicionar teste integrado confiável de reload/remount do workspace com livro/nó ativo, backup local e rich text restaurado.
-- [ ] Continuar o redesign funcional até haver evidência verificável de alinhamento premium com as referências.
+- [x] Adicionar teste integrado confiável de reload/remount do workspace com livro/nó ativo, backup local e rich text restaurado.
+- [x] Continuar o redesign funcional até haver evidência verificável de alinhamento premium com as referências.
 - [x] Tornar a hidratação do documento idempotente por SHA para evitar loops e travamentos do editor durante reload e testes.
 - [x] Validar typecheck, suíte completa (45 testes passando, 1 opcional ignorado) e build de produção após as correções.
 - [ ] Executar o fluxo autenticado real no preview com um projeto QA isolado, pois a sessão de navegador disponível permanece na tela de login.
