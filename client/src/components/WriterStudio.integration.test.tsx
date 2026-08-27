@@ -16,6 +16,7 @@ const harness = vi.hoisted(() => {
   const trpc = {
     data: { get: { useQuery: vi.fn(() => ({ data: { data: library, sha: "sha-1" }, isLoading: false, refetch: vi.fn() })) }, status: { useQuery: vi.fn(() => ({ data: { status: "synced" } })) }, put: { useMutation: vi.fn(() => ({ isPending: false, mutate: vi.fn() })) } },
     literaryAssist: { models: { useQuery: vi.fn(() => ({ data: { models: [{ id: "literary-model" }] } })) }, analyze: { useMutation: vi.fn((options: typeof literaryOptions) => { literaryOptions = options; return literaryMutation; }) } },
+    assets: { uploadCover: { useMutation: vi.fn(() => ({ isPending: false, mutate: vi.fn(), error: null })) } },
     useUtils: vi.fn(() => ({ data: { status: { invalidate: vi.fn() } } })),
   };
   return { trpc, literaryMutation, analysis, library };
@@ -39,6 +40,18 @@ describe("WriterStudio integrated literary assistance", () => {
     const editor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
     await waitFor(() => expect(editor.textContent).toBe("A noite caiu."));
 
+    const themeButton = screen.getByRole("button", { name: "Alternar tema" });
+    expect(themeButton.textContent).toContain("Tema escuro");
+    fireEvent.click(themeButton);
+    expect(themeButton.textContent).toContain("Tema clássico");
+    fireEvent.click(themeButton);
+    fireEvent.click(screen.getByRole("button", { name: "Modo sem distração" }));
+    expect(screen.getByRole("button", { name: "Sair do foco" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Sair do foco" }));
+    fireEvent.click(screen.getByRole("button", { name: "Localizar" }));
+    expect(screen.getByRole("textbox", { name: "Localizar texto" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Localizar" }));
+
     fireEvent.click(screen.getByRole("button", { name: "Analisar trecho" }));
     await waitFor(() => expect(screen.getByText("A imagem inicial é clara.")).toBeTruthy());
     expect(editor.textContent).toBe("A noite caiu.");
@@ -46,14 +59,18 @@ describe("WriterStudio integrated literary assistance", () => {
     fireEvent.click(screen.getByRole("button", { name: "Aplicar sugestão" }));
     expect(editor.textContent).toBe("A tarde caiu.");
 
-    fireEvent.input(editor, { target: { textContent: "A tarde caiu. A cidade acordou." } });
+    editor.innerHTML = '<p><strong>A tarde caiu.</strong> A cidade acordou. <a href="https://example.com">Fonte</a><img src="https://example.com/capa.jpg" alt="Capa" /></p>';
+    fireEvent.input(editor);
     await new Promise(resolve => setTimeout(resolve, 950));
     const bibliotecaButtons = screen.getAllByRole("button", { name: "Biblioteca" });
     fireEvent.click(bibliotecaButtons[bibliotecaButtons.length - 1]);
     fireEvent.click(screen.getByRole("button", { name: /Caderno/ }));
     fireEvent.click(screen.getByRole("button", { name: "Manuscrito" }));
     const reopenedEditor = await screen.findByRole("textbox", { name: "Editar bloco 1" });
-    expect(reopenedEditor.textContent).toBe("A tarde caiu. A cidade acordou.");
+    expect(reopenedEditor.textContent).toBe("A tarde caiu. A cidade acordou. Fonte");
+    expect(reopenedEditor.innerHTML).toContain("<strong>A tarde caiu.</strong>");
+    expect(reopenedEditor.innerHTML).toContain('href="https://example.com"');
+    expect(reopenedEditor.innerHTML).toContain('src="https://example.com/capa.jpg"');
 
     fireEvent.click(screen.getByRole("button", { name: "Projeto" }));
     expect(await screen.findByText("Projeto do livro")).toBeTruthy();

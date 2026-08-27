@@ -339,6 +339,22 @@ const fetchWithBackoff = async (
     : new Error("LLM request failed after exhausting retries");
 };
 
+export function parseJsonResponseBody<T>(body: string, contentType: string, label: string): T {
+  const normalized = body.trim();
+  if (normalized.startsWith("<") || contentType.includes("text/html")) {
+    throw new Error(`${label} retornou HTML em vez de JSON (content-type: ${contentType || "desconhecido"}).`);
+  }
+  try {
+    return JSON.parse(normalized) as T;
+  } catch {
+    throw new Error(`${label} retornou um corpo que não é JSON válido.`);
+  }
+}
+
+async function readJsonResponse<T>(response: Response, label: string): Promise<T> {
+  return parseJsonResponseBody<T>(await response.text(), response.headers.get("content-type") ?? "", label);
+}
+
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
   assertApiKey();
 
@@ -417,7 +433,7 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     );
   }
 
-  return (await response.json()) as InvokeResult;
+  return readJsonResponse<InvokeResult>(response, "O gateway LLM");
 }
 
 export type ModelInfo = {
@@ -450,5 +466,5 @@ export async function listLLMModels(): Promise<ModelsResponse> {
     );
   }
 
-  return (await response.json()) as ModelsResponse;
+  return readJsonResponse<ModelsResponse>(response, "O catálogo LLM");
 }

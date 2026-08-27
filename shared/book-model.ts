@@ -1,5 +1,5 @@
 export type SemanticBlock = { id: string; kind: "paragraph" | "quote" | "scene_break" | "heading"; text: string; sortOrder: number };
-export type SemanticScene = { id: string; title: string; blocks: SemanticBlock[]; characterIds: string[]; locationIds: string[]; sortOrder: number };
+export type SemanticScene = { id: string; title: string; blocks: SemanticBlock[]; richContent?: string; characterIds: string[]; locationIds: string[]; sortOrder: number };
 export type SemanticChapter = { id: string; title: string; scenes: SemanticScene[]; sortOrder: number };
 export type SemanticPart = { id: string; title: string; chapters: SemanticChapter[]; sortOrder: number };
 export type SemanticPlannedScene = { id: string; title: string; objective: string; conflict: string; notes: string };

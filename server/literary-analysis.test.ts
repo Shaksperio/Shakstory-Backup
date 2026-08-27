@@ -40,7 +40,13 @@ describe("literary analysis", () => {
     expect("Uma frase aparece.").toBe("Uma frase aparece.");
   });
 
-  it("propagates LLM endpoint failures without modifying the excerpt", async () => {
+  it("reports HTML responses as an operational provider error", async () => {
+    listLLMModels.mockResolvedValue({ data: [{ id: "literary-model" }] });
+    invokeLLM.mockResolvedValue({ model: "literary-model", choices: [{ message: { content: "<!DOCTYPE html><html>login</html>" } }] });
+    await expect(analyzeLiteraryText({ text: "Um trecho.", focus: "full", language: "pt-BR", model: "literary-model" })).rejects.toThrow("retornou HTML em vez de JSON");
+  });
+
+  it("propagates endpoint failures without modifying the excerpt", async () => {
     listLLMModels.mockResolvedValue({ data: [{ id: "literary-model" }] });
     invokeLLM.mockRejectedValue(new Error("upstream unavailable"));
     const excerpt = "O texto continua igual.";

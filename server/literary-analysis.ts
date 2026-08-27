@@ -79,6 +79,13 @@ const responseSchema = {
 const extractText = (content: string | Array<{ type: string; text?: string }>) =>
   Array.isArray(content) ? content.filter(part => part.type === "text").map(part => part.text ?? "").join("\n") : content;
 
+function parseStructuredResponse(raw: string): unknown {
+  const normalized = raw.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
+  if (!normalized) throw new Error("A IA retornou uma resposta vazia.");
+  if (normalized.startsWith("<")) throw new Error("O provedor da IA retornou HTML em vez de JSON; verifique o endpoint e a autenticação.");
+  try { return JSON.parse(normalized); } catch { throw new Error("A IA retornou conteúdo que não é JSON estruturado."); }
+}
+
 export async function listLiteraryModels() {
   return isOmniRouteConfigured() ? listOmniRouteModels() : listLLMModels();
 }
@@ -102,7 +109,7 @@ export async function analyzeLiteraryText(input: z.infer<typeof literaryAnalysis
   const response = isOmniRouteConfigured() ? await invokeOmniRouteLLM(request) : await invokeLLM(request);
 
   const raw = extractText(response.choices[0]?.message?.content ?? "");
-  const parsed = literaryAnalysisResponseSchema.parse({ ...JSON.parse(raw), model: response.model });
+  const parsed = literaryAnalysisResponseSchema.parse({ ...parseStructuredResponse(raw) as Record<string, unknown>, model: response.model });
   const safeSuggestions = parsed.suggestions.filter(item => {
     if (!item.original) return item.start === 0 && item.end === 0;
     return item.start >= 0 && item.end > item.start && input.text.slice(item.start, item.end) === item.original;
