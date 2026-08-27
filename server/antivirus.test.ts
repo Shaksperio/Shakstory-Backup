@@ -24,4 +24,23 @@ describe("antivirus gateway", () => {
     expect(result.status).toBe("error");
     expect(result.detail).toContain("limite");
   });
+
+  it.each([
+    ["qa-clean.bin", "clean"],
+    ["qa-infected.bin", "infected"],
+    ["qa-error.bin", "error"],
+    ["qa-invalid.json", "error"],
+  ])("normalizes controlled worker response for %s", async (filename, expected) => {
+    const previousPython = process.env.KICOMAV_PYTHON;
+    const previousWorker = process.env.KICOMAV_WORKER_SCRIPT;
+    try {
+      process.env.KICOMAV_PYTHON = "python3";
+      process.env.KICOMAV_WORKER_SCRIPT = "scripts/kicomav_test_worker.py";
+      const result = await scanWithLocalKicomAV({ bytes: Buffer.from("qa"), filename, contentType: "application/octet-stream" });
+      expect(result.status).toBe(expected);
+    } finally {
+      if (previousPython === undefined) delete process.env.KICOMAV_PYTHON; else process.env.KICOMAV_PYTHON = previousPython;
+      if (previousWorker === undefined) delete process.env.KICOMAV_WORKER_SCRIPT; else process.env.KICOMAV_WORKER_SCRIPT = previousWorker;
+    }
+  });
 });

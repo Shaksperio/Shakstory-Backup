@@ -61,7 +61,8 @@ export async function scanWithLocalKicomAV(input: {
 function runWorker(request: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const pythonBin = process.env.KICOMAV_PYTHON ?? "python3";
-    const child = spawn(pythonBin, ["scripts/kicomav_worker.py"], {
+    const workerScript = process.env.KICOMAV_WORKER_SCRIPT ?? "scripts/kicomav_worker.py";
+    const child = spawn(pythonBin, [workerScript], {
       cwd: process.cwd(),
       env: { ...process.env, PYTHONUNBUFFERED: "1" },
       stdio: ["pipe", "pipe", "pipe"],

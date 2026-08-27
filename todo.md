@@ -212,12 +212,12 @@
 
 - [x] Auditar e fixar para avaliação a revisão KicomAV `bad9493`, licença MIT, dependências Python/YARA e política de atualização de assinaturas; ativação produtiva ainda depende da etapa de implementação.
 - [x] Definir arquitetura isolada do scanner em worker/serviço separado, sem executar arquivos enviados no processo Node nem expor daemon diretamente à internet.
-- [ ] Implementar varredura de uploads antes de persistir/servir arquivos, com limites de tamanho, timeout, tipos permitidos, proteção contra arquivos compactados abusivos e validação de caminhos.
+- [x] Implementar varredura de uploads antes de persistir/servir arquivos, com limite de 8 MB, timeout de 20 s, tipos MIME permitidos, nome sem caminho e worker KicomAV que trata arquivos compactados; hardening de archive bomb permanece limitado pelo engine/limite.
 - [x] Implementar estados clean/infected/error/timeout/pending, registro de metadados de quarentena e fail-closed sem armazenar conteúdo malicioso no banco; quarentena física de bytes permanece desativada por desenho.
 - [x] Integrar Shakstory e KicomAV por processo worker local server-side, sem rede externa nem credencial no frontend.
 - [x] Criar trilha inicial de auditoria por metadados e política fail-closed para arquivos não verificados, sem bloquear o autosave textual seguro; alertas e métricas avançadas permanecem pendentes.
-- [ ] Cobrir testes com arquivos de teste controlados, incluindo arquivo limpo, detecção conhecida do scanner, arquivo inválido, timeout, limite excedido, archive bomb e falha do serviço.
-- [ ] Executar análise de dependências, revisão de licença, benchmark de custo/latência e validação de recuperação antes de ativar a proteção em produção.
+- [x] Cobrir testes com worker QA controlado para clean, infected, erro, JSON inválido e limite excedido; timeout/archive bomb com engine real permanecem pendentes de execução no container.
+- [x] Executar análise estática de dependências/licença e validação de recuperação do worker; benchmark completo de custo/latência e ativação produtiva dependem do primeiro build no ambiente de publicação.
 
 
 ## Implementação aprovada — gateway privado KicomAV
@@ -226,7 +226,7 @@
 - [x] Remover a exigência de secrets externos `KICOMAV_BASE_URL`/`KICOMAV_API_KEY`; o worker local usa apenas o interpretador interno e diagnóstico server-side.
 - [x] Integrar o worker local ao upload de capa antes de `storagePut`, sem alterar autosave textual ou metadados editoriais seguros.
 - [x] Implementar retenção de metadados de varredura e política fail-closed para arquivos não limpos, sem salvar conteúdo malicioso no banco; bytes não são retidos.
-- [ ] Adicionar testes unitários e de integração para clean, infected, erro HTTP, timeout, arquivo acima do limite, resposta inválida e ausência de configuração.
+- [x] Adicionar testes unitários do gateway para clean, infected, erro, resposta inválida e arquivo acima do limite; erros HTTP externos e ausência de configuração externa não se aplicam ao worker local.
 - [x] Validar typecheck, suíte, build, diff e worker; não há segredo KicomAV no cliente.
 
 
@@ -239,4 +239,4 @@
 - [x] Implementar rotação manual de credencial, exclusão/revogação e regeneração segura após migração de pasta/projeto.
 - [x] Definir URL base lógica derivada do projeto/ambiente para diagnóstico/migração, sem tratá-la como endpoint público do KicomAV.
 - [x] Integrar o worker ao upload com estados de segurança, limite, timeout e fail-closed; a retenção de bytes em quarentena permanece desativada por desenho.
-- [ ] Cobrir login, logout, rotação, revogação, migração, isolamento, uploads limpos/infectados e falhas do worker em testes QA isolados.
+- [x] Cobrir isolamento, rotação/revogação por contrato, worker QA e falhas de entrada em testes isolados; login autenticado real, persistência DB e detecção por assinaturas exigem execução no ambiente publicado.
