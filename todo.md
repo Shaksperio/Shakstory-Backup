@@ -206,3 +206,15 @@
 - [x] Implementar CRUD completo de personagens, locais, eventos, cenas, notas e relações, com editar, excluir, status e IDs estáveis.
 - [x] Cobrir persistência/reabertura dos CRUDs e métricas derivadas com testes QA isolados, sem usar livros reais.
 - [x] Validar desktop/mobile, teclado, foco, diálogos destrutivos, console, rede, servidor e build antes do checkpoint; o fluxo autenticado do preview permanece explicitamente bloqueado pela ausência de login manual.
+
+
+## Etapa futura — proteção antivírus com KicomAV
+
+- [ ] Auditar e fixar uma versão/revisão do KicomAV, licença MIT, dependências Python/YARA e política de atualização de assinaturas.
+- [ ] Definir arquitetura isolada do scanner, preferencialmente worker/serviço separado, sem executar arquivos enviados no processo Node nem expor daemon diretamente à internet.
+- [ ] Implementar varredura de uploads antes de persistir/servir arquivos, com limites de tamanho, timeout, tipos permitidos, proteção contra arquivos compactados abusivos e validação de caminhos.
+- [ ] Implementar estados seguro, infectado, falha e pendente, quarentena imutável e retenção mínima de metadados sem armazenar conteúdo malicioso no banco.
+- [ ] Integrar autenticação entre Shakstory e KicomAV por segredo server-side, rede privada/Unix socket ou mTLS, nunca no frontend.
+- [ ] Criar trilha de auditoria, alertas, métricas e política de fail-closed para arquivos não verificados, sem bloquear o autosave textual seguro.
+- [ ] Cobrir testes com arquivos de teste controlados, incluindo arquivo limpo, detecção conhecida do scanner, arquivo inválido, timeout, limite excedido, archive bomb e falha do serviço.
+- [ ] Executar análise de dependências, revisão de licença, benchmark de custo/latência e validação de recuperação antes de ativar a proteção em produção.

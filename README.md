@@ -37,3 +37,8 @@ O segundo anexo foi usado somente como referência para separação de camadas, 
 ## Licença e publicação
 
 Defina a licença e o destino de hospedagem antes da publicação externa. O repositório GitHub recomendado é privado por padrão. Um ambiente novo deve ser capaz de clonar o repositório, configurar secrets, instalar dependências, validar os dados, iniciar o servidor e recuperar os documentos versionados sem depender do ambiente que originou o projeto.
+
+
+## Proteção antivírus planejada
+
+A proteção de uploads baseada no [KicomAV](https://github.com/hanul93/kicomav) está planejada para uma etapa posterior. A decisão arquitetural é executar o scanner em worker/serviço isolado, com autenticação server-side, limites próprios de tamanho e tempo, quarentena separada e promoção para storage permanente somente após resultado limpo. O daemon não será exposto diretamente ao navegador ou à internet, e arquivos não verificados não serão servidos como se fossem seguros. A auditoria preliminar, a revisão de dependências/licença e os critérios de testes estão em [`docs/kicomav-integration-audit.md`](docs/kicomav-integration-audit.md). A proteção ainda não está ativa nesta versão.
