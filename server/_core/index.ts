@@ -49,6 +49,10 @@ async function startServer() {
       createContext,
     })
   );
+  // Never let an API miss fall through to the SPA HTML fallback. This keeps JSON clients diagnosable.
+  app.use("/api", (req, res) => {
+    if (!res.headersSent) res.status(404).json({ error: "API route not found", path: req.path });
+  });
   // development mode uses Vite, production mode uses static files
   if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);

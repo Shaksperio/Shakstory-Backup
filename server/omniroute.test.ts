@@ -28,6 +28,12 @@ describe("OmniRoute adapter", () => {
     expect((fetchMock.mock.calls[1][1] as RequestInit).headers).toMatchObject({ authorization: "Bearer test-key" });
   });
 
+  it("diagnoses an HTML response instead of leaking a JSON parse error", async () => {
+    process.env.OMNIROUTE_BASE_URL = "https://omni.example/v1";
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, headers: new Headers({ "content-type": "text/html" }), text: async () => "<!DOCTYPE html><html>gateway</html>" }));
+    await expect(listOmniRouteModels()).rejects.toThrow("HTML ou uma resposta não-JSON");
+  });
+
   it("rejects an insecure endpoint in production", () => {
     process.env.NODE_ENV = "production";
     process.env.OMNIROUTE_BASE_URL = "http://localhost:20128/v1";

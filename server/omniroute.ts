@@ -39,9 +39,17 @@ async function request(path: string, init?: RequestInit) {
   }
 }
 
+async function readJson<T>(response: Response): Promise<T> {
+  if (typeof response.text !== "function") return response.json() as Promise<T>;
+  const bodyText = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+  if (bodyText.trimStart().startsWith("<") || !contentType.toLowerCase().includes("json")) throw new Error("OmniRoute retornou HTML ou uma resposta não-JSON; verifique a URL pública do gateway.");
+  try { return JSON.parse(bodyText) as T; } catch { throw new Error("OmniRoute retornou JSON inválido."); }
+}
+
 export async function listOmniRouteModels() {
   const response = await request("/models");
-  const body = await response.json() as { data?: Array<{ id?: string }> };
+  const body = await readJson<{ data?: Array<{ id?: string }> }>(response);
   return { data: (body.data ?? []).filter((model): model is { id: string } => typeof model.id === "string" && model.id.length > 0) };
 }
 
@@ -50,7 +58,7 @@ export async function invokeOmniRouteLLM(input: OmniRequest): Promise<{ model: s
     method: "POST",
     body: JSON.stringify({ model: input.model ?? "auto", messages: input.messages, response_format: input.response_format, max_tokens: input.maxTokens }),
   });
-  const body = await response.json() as OmniResponse;
+  const body = await readJson<OmniResponse>(response);
   if (!body.choices?.[0]?.message?.content) throw new Error("OmniRoute retornou uma resposta sem conteúdo.");
   return { model: body.model ?? input.model ?? "auto", choices: body.choices };
 }

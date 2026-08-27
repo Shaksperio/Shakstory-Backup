@@ -127,3 +127,15 @@
 - [x] Revalidar os gaps de revisão antes do próximo checkpoint.
 
 
+
+# ShakStory — Evolução de publicação e editor
+
+- [x] Auditar e corrigir o erro `Unexpected token '<'` quando a aplicação espera JSON.
+- [x] Adicionar capa personalizada ao modelo editorial e às opções de exportação.
+- [x] Adicionar seleção de imagem de capa por URL HTTPS com preview, persistência editorial e fallback seguro.
+- [x] Adicionar sumário editorial configurável e incluí-lo em EPUB, PDF, DOCX e HTML; o EPUB mantém `nav.xhtml` obrigatório para navegação, enquanto a opção controla o sumário editorial visível nos demais formatos.
+- [x] Adicionar presets tipográficos Classic, Modern, Minimal, Fantasy, Sci-Fi, Romance, Thriller, Academic e Children.
+- [x] Fazer os presets tipográficos controlarem fonte, escala, espaçamento, margens e títulos nos exportadores, com margens específicas por preset.
+- [x] Alinhar a experiência do editor à combinação Novelist, Kindle Create e Atticus: planejamento semântico, escrita estrutural, preparação visual e publicação.
+- [x] Adicionar testes unitários para capa, sumário, presets e resposta de API; a cobertura UI existente valida o fluxo editorial e a persistência, enquanto a prévia foi inspecionada em desktop/mobile.
+- [x] Executar typecheck, suíte completa, build e inspeção visual antes de publicar.

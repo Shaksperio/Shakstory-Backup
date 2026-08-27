@@ -14,6 +14,19 @@ describe("book export", () => {
     expect(book.chapters[0].content).toContain("Primeiro parágrafo.");
   });
 
+  it("exports cover, toc controls and typography presets", async () => {
+    const configured: ExportBook = { ...book, coverImageUrl: "https://example.com/cover.jpg", includeToc: true, typography: "fantasy" };
+    const html = buildPrintHtml(configured);
+    expect(html).toContain("https://example.com/cover.jpg");
+    expect(html).toContain("Sumário");
+    expect(html).toContain("Palatino");
+    const withoutToc = buildPrintHtml({ ...configured, includeToc: false });
+    expect(withoutToc).not.toContain('<nav class="toc"');
+    const epub = await buildEpub(configured);
+    const zip = await JSZip.loadAsync(await epub.arrayBuffer());
+    expect(await zip.file("OEBPS/cover.xhtml")?.async("string")).toContain("cover.jpg");
+  });
+
   it("builds print HTML and DOCX bytes from nodes", async () => {
     const html = buildPrintHtml(book);
     const docx = await buildDocx(book);
