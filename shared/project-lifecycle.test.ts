@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { stableId } from "./project-lifecycle";
-import { addChapter, addPart, createInitialNode, displayNodeTitle, duplicateNode, moveNode, removeNode, renameNode, updateNodeContent } from "./project-lifecycle";
+import { addChapter, addPart, createInitialNode, displayNodeTitle, duplicateNode, mergeNodes, moveNode, removeNode, renameNode, splitNode, updateNodeContent } from "./project-lifecycle";
 
 describe("project lifecycle", () => {
   it("creates, updates and reopens a stable chapter list", () => {
@@ -52,6 +52,18 @@ describe("project lifecycle", () => {
     const reopened = JSON.parse(JSON.stringify(rich));
     expect(reopened[0].id).toBe(first.id);
     expect(reopened[0].richContent).toContain("<strong>");
+  });
+
+  it("splits and merges adjacent editable nodes without losing text", () => {
+    const nodes = [{ id: "chapter-1", title: "Capítulo 1", kind: "chapter" as const, content: "Primeira parte. Segunda parte.", updatedAt: 1 }];
+    const split = splitNode(nodes, "chapter-1", 16, 2);
+    expect(split).toHaveLength(2);
+    expect(split[0].id).toBe("chapter-1");
+    expect(split[1].id).not.toBe("chapter-1");
+    const merged = mergeNodes(split, split[0].id, split[1].id, 3);
+    expect(merged).toHaveLength(1);
+    expect(merged[0].id).toBe("chapter-1");
+    expect(merged[0].content).toContain("Segunda parte.");
   });
 
   it("never removes the last remaining node", () => {

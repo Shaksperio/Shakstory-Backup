@@ -63,3 +63,25 @@ export function removeNode(nodes: LifecycleNode[], id: string): LifecycleNode[] 
   if (nodes.length <= 1) return nodes;
   return nodes.filter(node => node.id !== id);
 }
+
+
+export function splitNode(nodes: LifecycleNode[], id: string, offset: number, now: number): LifecycleNode[] {
+  const index = nodes.findIndex(node => node.id === id);
+  const source = nodes[index];
+  if (index < 0 || !source || source.kind === "part") return nodes;
+  const safeOffset = Math.max(1, Math.min(source.content.length - 1, Math.floor(offset)));
+  if (safeOffset <= 0 || safeOffset >= source.content.length) return nodes;
+  const first: LifecycleNode = { ...source, content: source.content.slice(0, safeOffset).trim(), richContent: undefined, updatedAt: now };
+  const second: LifecycleNode = { ...source, id: stableId(source.kind), title: `${source.title} — continuação`, content: source.content.slice(safeOffset).trim(), richContent: undefined, updatedAt: now };
+  return [...nodes.slice(0, index), first, second, ...nodes.slice(index + 1)];
+}
+
+export function mergeNodes(nodes: LifecycleNode[], firstId: string, secondId: string, now: number): LifecycleNode[] {
+  const firstIndex = nodes.findIndex(node => node.id === firstId);
+  const secondIndex = nodes.findIndex(node => node.id === secondId);
+  if (firstIndex < 0 || secondIndex !== firstIndex + 1 || nodes[firstIndex].kind === "part" || nodes[secondIndex].kind === "part") return nodes;
+  const first = nodes[firstIndex];
+  const second = nodes[secondIndex];
+  const merged: LifecycleNode = { ...first, content: [first.content.trim(), second.content.trim()].filter(Boolean).join("\n\n"), richContent: undefined, updatedAt: now };
+  return [...nodes.slice(0, firstIndex), merged, ...nodes.slice(secondIndex + 1)];
+}

@@ -17,5 +17,11 @@ describe("ProjectView", () => {
     fireEvent.change(screen.getByPlaceholderText("Adicionar um próximo passo"), { target: { value: "Definir a sinopse" } });
     fireEvent.click(screen.getByRole("button", { name: "Adicionar próximo passo" }));
     expect(screen.getByText("Definir a sinopse")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Meta total de palavras"), { target: { value: "1000" } });
+    fireEvent.blur(screen.getByLabelText("Meta total de palavras"));
+    fireEvent.change(screen.getByLabelText("Meta diária"), { target: { value: "250" } });
+    fireEvent.change(screen.getByLabelText("Prazo"), { target: { value: "2026-12-31" } });
+    expect(screen.getByText(/250 por dia/)).toBeTruthy();
+    expect(screen.getByText(/prazo 2026-12-31/)).toBeTruthy();
   });
 });

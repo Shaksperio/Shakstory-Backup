@@ -60,6 +60,11 @@ describe("WriterStudio integrated literary assistance", () => {
     expect(screen.getByRole("button", { name: "Desfazer" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Refazer" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Localizar" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Título H1" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Título H6" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Citação" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Lista numerada" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Alinhar à direita" })).toBeTruthy();
     expect(screen.getAllByText(/palavras/i).length).toBeGreaterThan(0);
     const execCommand = vi.fn(() => true);
     Object.defineProperty(document, "execCommand", { configurable: true, value: execCommand });
@@ -108,6 +113,23 @@ describe("WriterStudio integrated literary assistance", () => {
     expect(await screen.findByRole("textbox", { name: "Editar bloco 1" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Preparar" }));
     expect(await screen.findByText("Preparação editorial")).toBeTruthy();
+    fireEvent.click(screen.getByRole("checkbox", { name: "Incluir dedicatória" }));
+    fireEvent.change(screen.getByRole("textbox", { name: "Conteúdo Dedicatória" }), { target: { value: "Para quem lê." } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar metadados" }));
+    fireEvent.click(screen.getByRole("button", { name: "Projeto" }));
+    fireEvent.click(screen.getByRole("button", { name: "Preparar" }));
+    expect((await screen.findByRole("textbox", { name: "Conteúdo Dedicatória" }) as HTMLTextAreaElement).value).toBe("Para quem lê.");
+  });
+
+  it("splits and merges manuscript nodes through the editor controls", async () => {
+    render(<WriterStudio />);
+    fireEvent.click(screen.getByRole("button", { name: "Continuar Caderno" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Manuscrito" }));
+    await screen.findByRole("textbox", { name: "Editar bloco 1" });
+    fireEvent.click(screen.getByRole("button", { name: "Dividir aqui" }));
+    expect(await screen.findByText(/continuação/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Unir ao próximo" }));
+    await waitFor(() => expect(screen.queryByText(/continuação/)).toBeNull());
   });
 
   it("exposes contextual navigation and protected library CRUD actions", async () => {

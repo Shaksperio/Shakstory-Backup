@@ -27,6 +27,18 @@ describe("book export", () => {
     expect(await zip.file("OEBPS/cover.xhtml")?.async("string")).toContain("cover.jpg");
   });
 
+  it("preserves front matter and back matter in exported formats", async () => {
+    const configured: ExportBook = { ...book, frontMatter: [{ id: "dedication", title: "Dedicatória", content: "Para quem lê." }], backMatter: [{ id: "about", title: "Sobre a autora", content: "Notas finais." }] };
+    const html = buildPrintHtml(configured);
+    expect(html).toContain("Dedicatória");
+    expect(html).toContain("Sobre a autora");
+    const docx = await buildDocx(configured);
+    expect(docx.size).toBeGreaterThan(100);
+    const epub = await buildEpub(configured);
+    const zip = await JSZip.loadAsync(await epub.arrayBuffer());
+    expect(await zip.file("OEBPS/cover.xhtml")?.async("string")).toContain("Dedicatória");
+  });
+
   it("builds print HTML and DOCX bytes from nodes", async () => {
     const html = buildPrintHtml(book);
     const docx = await buildDocx(book);

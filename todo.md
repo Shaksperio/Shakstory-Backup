@@ -240,3 +240,27 @@
 - [x] Definir URL base lógica derivada do projeto/ambiente para diagnóstico/migração, sem tratá-la como endpoint público do KicomAV.
 - [x] Integrar o worker ao upload com estados de segurança, limite, timeout e fail-closed; a retenção de bytes em quarentena permanece desativada por desenho.
 - [x] Cobrir isolamento, rotação/revogação por contrato, worker QA e falhas de entrada em testes isolados; login autenticado real, persistência DB e detecção por assinaturas exigem execução no ambiente publicado.
+
+
+## Correção de escopo — reconstrução funcional do editor
+
+- [ ] Entregar Biblioteca integrada com criação, abertura, edição, duplicação, exclusão/reset protegido, busca, filtro, ordenação e ponto de retomada.
+- [x] Entregar Projeto com metas total/diária, prazo, progresso derivado e último ponto; hábito diário detalhado e backup/restore visual continuam pendentes.
+- [ ] Entregar Manuscrito com árvore Partes → Capítulos → Cenas → Blocos, títulos editáveis, reordenação, duplicação, divisão/união e exclusão.
+- [x] Entregar editor rico com estilos H1–H6, parágrafo, negrito, itálico, sublinhado, links, imagem, separador, citação, listas, alinhamento, undo/redo e busca/substituição; comentários e histórico visual continuam pendentes.
+- [ ] Entregar Planejar com CRUD descobrível de personagens, locais, eventos, objetivos, conflitos, cenas, relações e notas, incluindo tags, status, vínculos e reabertura.
+- [x] Entregar Book Builder funcional com Front Matter e Back Matter editáveis, folha de rosto, sumário e exportação preservada; páginas adicionais específicas como copyright e notas de impressão continuam pendentes.
+- [ ] Entregar Layout Engine com temas editáveis, presets, fonte, tamanho, trim, margens, espaçamento, drop cap, separadores, imagens, cabeçalhos/rodapés e regras de viúvas/órfãs.
+- [ ] Entregar preview integrado responsivo para livro, tablet, e-reader, telefone e impressão, sem abandonar o contexto do editor.
+- [x] Validar EPUB, PDF, DOCX, TXT e HTML em round-trip básico, preservando capa, sumário, estilos e front/back matter; round-trip completo com arquivos baixados permanece pendente.
+- [ ] Expor backup/restore e histórico de snapshots de forma visível, com conflito e recuperação sem perda.
+- [ ] Congelar a expansão do KicomAV até os fluxos editoriais acima passarem em QA integrado; manter o worker sem interferir no autosave textual.
+
+
+## Marco funcional 2026-08-28
+
+- [x] Book Builder: ativar, editar, salvar e reabrir uma seção de Front Matter pela UI; exportação HTML/EPUB/DOCX coberta por teste.
+- [x] Projeto: persistir meta total, meta diária, prazo e progresso derivado com teste QA.
+- [x] Manuscrito: adicionar comandos acessíveis H1–H6, citação, listas, alinhamento, separador e limpeza de formatação.
+- [x] Manuscrito: dividir e unir nós adjacentes com IDs estáveis, persistência e fluxo UI testado.
+- [ ] Completar a reconstrução restante de Biblioteca, árvore Partes/Cenas/Blocos, Planejar avançado, Layout Engine, preview multi-dispositivo e snapshots antes de declarar paridade funcional.
