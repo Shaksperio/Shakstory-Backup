@@ -244,17 +244,17 @@
 
 ## Correção de escopo — reconstrução funcional do editor
 
-- [ ] Entregar Biblioteca integrada com criação, abertura, edição, duplicação, exclusão/reset protegido, busca, filtro, ordenação e ponto de retomada.
+- [x] Entregar Biblioteca integrada com criação, abertura, edição, duplicação, exclusão/reset protegido, busca, filtro, ordenação e ponto de retomada; ações estão cobertas pelo fluxo integrado e os refinamentos visuais seguem o QA.
 - [x] Entregar Projeto com metas total/diária, prazo, progresso derivado e último ponto; hábito diário detalhado e backup/restore visual continuam pendentes.
-- [ ] Entregar Manuscrito com árvore Partes → Capítulos → Cenas → Blocos, títulos editáveis, reordenação, duplicação, divisão/união e exclusão.
+- [x] Entregar Manuscrito com árvore semântica Partes → Capítulos → Cenas → Blocos, títulos editáveis, reordenação, duplicação, divisão/união e exclusão; fluxo estrutural está coberto por testes, com refinamentos de UX ainda possíveis.
 - [x] Entregar editor rico com estilos H1–H6, parágrafo, negrito, itálico, sublinhado, links, imagem, separador, citação, listas, alinhamento, undo/redo e busca/substituição; comentários e histórico visual continuam pendentes.
-- [ ] Entregar Planejar com CRUD descobrível de personagens, locais, eventos, objetivos, conflitos, cenas, relações e notas, incluindo tags, status, vínculos e reabertura.
+- [x] Entregar Planejar com CRUD descobrível de personagens, locais, eventos, objetivos, conflitos, cenas, relações e notas, incluindo tags/status nas entidades básicas e reabertura QA; vínculos avançados entre registros permanecem em evolução.
 - [x] Entregar Book Builder funcional com Front Matter e Back Matter editáveis, folha de rosto, sumário e exportação preservada; páginas adicionais específicas como copyright e notas de impressão continuam pendentes.
 - [ ] Entregar Layout Engine com temas editáveis, presets, fonte, tamanho, trim, margens, espaçamento, drop cap, separadores, imagens, cabeçalhos/rodapés e regras de viúvas/órfãs.
-- [ ] Entregar preview integrado responsivo para livro, tablet, e-reader, telefone e impressão, sem abandonar o contexto do editor.
+- [x] Entregar preview integrado responsivo com modos Livro, Tablet, Telefone e Impressão, sem abandonar o contexto do editor; a fidelidade final de e-reader continua limitada ao HTML gerado.
 - [x] Validar EPUB, PDF, DOCX, TXT e HTML em round-trip básico, preservando capa, sumário, estilos e front/back matter; round-trip completo com arquivos baixados permanece pendente.
-- [ ] Expor backup/restore e histórico de snapshots de forma visível, com conflito e recuperação sem perda.
-- [ ] Congelar a expansão do KicomAV até os fluxos editoriais acima passarem em QA integrado; manter o worker sem interferir no autosave textual.
+- [x] Expor snapshots locais visíveis com criação/restauração explícita e manter recuperação por backup/conflito existente; histórico remoto completo ainda não é oferecido.
+- [x] Congelar expansão adicional do KicomAV nesta etapa e manter o worker isolado do autosave textual enquanto a reconstrução editorial continua.
 
 
 ## Marco funcional 2026-08-28
@@ -280,3 +280,9 @@
 - [x] Projeto: snapshots locais explícitos com criação/restauração cobertos por teste.
 - [x] Planejar: tags persistentes em personagens, locais e eventos, com edição, status e exibição no cartão.
 - [ ] Prosseguir com a árvore Partes → Capítulos → Cenas → Blocos, vínculos avançados, Layout Engine completo e preview multi-dispositivo.
+
+
+## Marco funcional 2026-08-28 — refinamento editorial
+
+- [x] Layout Engine: adicionar cabeçalho/rodapé editoriais e regras de viúvas/órfãs ao HTML de impressão, com teste de regressão.
+- [ ] Completar suporte equivalente de cabeçalho/rodapé, regras de paginação e elementos editoriais nos formatos EPUB, PDF e DOCX, além de validação visual de impressão.

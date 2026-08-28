@@ -40,9 +40,12 @@ describe("book export", () => {
   });
 
   it("applies layout settings to print HTML", () => {
-    const html = buildPrintHtml({ ...book, marginPreset: "wide", trimSize: "6x9", dropCap: true });
+    const html = buildPrintHtml({ ...book, marginPreset: "wide", trimSize: "6x9", dropCap: true, headerText: "Cabeçalho QA", footerText: "Rodapé QA" });
     expect(html).toContain("margin:88px auto");
     expect(html).toContain("::first-letter");
+    expect(html).toContain("Cabeçalho QA");
+    expect(html).toContain("Rodapé QA");
+    expect(html).toContain("widows:3");
   });
 
   it("builds print HTML and DOCX bytes from nodes", async () => {
