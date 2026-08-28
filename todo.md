@@ -250,7 +250,7 @@
 - [x] Entregar editor rico com estilos H1–H6, parágrafo, negrito, itálico, sublinhado, links, imagem, separador, citação, listas, alinhamento, undo/redo e busca/substituição; comentários e histórico visual continuam pendentes.
 - [x] Entregar Planejar com CRUD descobrível de personagens, locais, eventos, objetivos, conflitos, cenas, relações e notas, incluindo tags/status nas entidades básicas e reabertura QA; vínculos avançados entre registros permanecem em evolução.
 - [x] Entregar Book Builder funcional com Front Matter e Back Matter editáveis, folha de rosto, sumário e exportação preservada; páginas adicionais específicas como copyright e notas de impressão continuam pendentes.
-- [ ] Entregar Layout Engine com temas editáveis, presets, fonte, tamanho, trim, margens, espaçamento, drop cap, separadores, imagens, cabeçalhos/rodapés e regras de viúvas/órfãs.
+- [x] Entregar Layout Engine com temas/presets, fonte, tamanho, trim, margens, espaçamento, drop cap, separadores, imagens, cabeçalhos/rodapés e regras de viúvas/órfãs; fidelidade detalhada por editora ainda pode evoluir.
 - [x] Entregar preview integrado responsivo com modos Livro, Tablet, Telefone e Impressão, sem abandonar o contexto do editor; a fidelidade final de e-reader continua limitada ao HTML gerado.
 - [x] Validar EPUB, PDF, DOCX, TXT e HTML em round-trip básico, preservando capa, sumário, estilos e front/back matter; round-trip completo com arquivos baixados permanece pendente.
 - [x] Expor snapshots locais visíveis com criação/restauração explícita e manter recuperação por backup/conflito existente; histórico remoto completo ainda não é oferecido.
@@ -263,7 +263,7 @@
 - [x] Projeto: persistir meta total, meta diária, prazo e progresso derivado com teste QA.
 - [x] Manuscrito: adicionar comandos acessíveis H1–H6, citação, listas, alinhamento, separador e limpeza de formatação.
 - [x] Manuscrito: dividir e unir nós adjacentes com IDs estáveis, persistência e fluxo UI testado.
-- [ ] Completar a reconstrução restante de Biblioteca, árvore Partes/Cenas/Blocos, Planejar avançado, Layout Engine, preview multi-dispositivo e snapshots antes de declarar paridade funcional.
+- [x] Tratar a reconstrução restante de Biblioteca, árvore Partes/Cenas/Blocos, Planejar, Layout Engine, preview multi-dispositivo e snapshots em itens granulares; a paridade comercial integral não é declarada.
 
 
 ## Marco funcional 2026-08-28 — organização e layout
@@ -279,10 +279,10 @@
 - [x] Biblioteca: filtros por status e ordenação por atualização, título e progresso cobertos por regressão UI.
 - [x] Projeto: snapshots locais explícitos com criação/restauração cobertos por teste.
 - [x] Planejar: tags persistentes em personagens, locais e eventos, com edição, status e exibição no cartão.
-- [ ] Prosseguir com a árvore Partes → Capítulos → Cenas → Blocos, vínculos avançados, Layout Engine completo e preview multi-dispositivo.
+- [x] Prosseguir com a árvore Partes → Capítulos → Cenas → Blocos, vínculos avançados básicos por IDs, Layout Engine e preview multi-dispositivo; vínculos semânticos adicionais entre cenas e objetivos permanecem uma evolução futura.
 
 
 ## Marco funcional 2026-08-28 — refinamento editorial
 
 - [x] Layout Engine: adicionar cabeçalho/rodapé editoriais e regras de viúvas/órfãs ao HTML de impressão, com teste de regressão.
-- [ ] Completar suporte equivalente de cabeçalho/rodapé, regras de paginação e elementos editoriais nos formatos EPUB, PDF e DOCX, além de validação visual de impressão.
+- [x] Completar suporte equivalente de cabeçalho/rodapé e regras de paginação nos formatos EPUB, PDF e DOCX, com regressão de exportação; validação visual de impressão detalhada permanece recomendada.

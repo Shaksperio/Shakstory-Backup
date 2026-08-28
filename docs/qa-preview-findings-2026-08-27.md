@@ -24,3 +24,8 @@ A captura desktop do preview mostrou o tema clássico com superfícies de papel 
 ## Auditoria visual da Biblioteca — 2026-08-27
 
 O preview local mostrou um cabeçalho compacto com gatilho de menu à esquerda, navegação direta apenas em telas largas e conteúdo principal sem sobreposição permanente. Em desktop, a Biblioteca apresenta hierarquia clara, busca alinhada à seção de projetos e estado vazio legível. Em mobile de 390 px, o título, descrição, CTA, cards de estatísticas, busca e estado vazio refluem em uma coluna sem overflow horizontal visível. A validação de cartões com livros reais, abertura do menu, diálogos destrutivos e fluxo autenticado continua dependente de sessão autenticada; os testes QA isolados cobrem esses estados sem dados editoriais do autor.
+
+
+## Auditoria visual final do marco 2026-08-28
+
+A captura desktop confirmou o shell com menu contextual, Biblioteca, Projeto, Manuscrito, Planejar, Preparar e Segurança sem cobrir a área principal. A captura mobile em 390×844 confirmou recolhimento dos itens de navegação, botão Novo livro em largura adaptada e cartões empilhados sem overflow horizontal aparente. O conteúdo autenticado de um livro e os fluxos de exportação ainda dependem de login manual no preview.
