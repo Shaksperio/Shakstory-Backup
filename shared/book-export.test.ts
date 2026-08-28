@@ -39,6 +39,12 @@ describe("book export", () => {
     expect(await zip.file("OEBPS/cover.xhtml")?.async("string")).toContain("Dedicatória");
   });
 
+  it("applies layout settings to print HTML", () => {
+    const html = buildPrintHtml({ ...book, marginPreset: "wide", trimSize: "6x9", dropCap: true });
+    expect(html).toContain("margin:88px auto");
+    expect(html).toContain("::first-letter");
+  });
+
   it("builds print HTML and DOCX bytes from nodes", async () => {
     const html = buildPrintHtml(book);
     const docx = await buildDocx(book);

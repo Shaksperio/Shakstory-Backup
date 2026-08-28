@@ -264,3 +264,19 @@
 - [x] Manuscrito: adicionar comandos acessíveis H1–H6, citação, listas, alinhamento, separador e limpeza de formatação.
 - [x] Manuscrito: dividir e unir nós adjacentes com IDs estáveis, persistência e fluxo UI testado.
 - [ ] Completar a reconstrução restante de Biblioteca, árvore Partes/Cenas/Blocos, Planejar avançado, Layout Engine, preview multi-dispositivo e snapshots antes de declarar paridade funcional.
+
+
+## Marco funcional 2026-08-28 — organização e layout
+
+- [x] Biblioteca: adicionar filtro por status e ordenação por atualização, título e progresso, com regressão UI.
+- [x] Projeto: adicionar criação e restauração explícita de até oito snapshots locais, sem alteração automática do documento.
+- [x] Layout Engine: tornar formato A4/A5/6×9, margens estreitas/normais/amplas e capitular efetivos em HTML, EPUB, PDF e DOCX.
+- [x] Executar typecheck, suíte integral e build após o marco: 27 arquivos, 62 testes aprovados e 1 ignorado.
+
+
+## Marco funcional 2026-08-28 — organização narrativa
+
+- [x] Biblioteca: filtros por status e ordenação por atualização, título e progresso cobertos por regressão UI.
+- [x] Projeto: snapshots locais explícitos com criação/restauração cobertos por teste.
+- [x] Planejar: tags persistentes em personagens, locais e eventos, com edição, status e exibição no cartão.
+- [ ] Prosseguir com a árvore Partes → Capítulos → Cenas → Blocos, vínculos avançados, Layout Engine completo e preview multi-dispositivo.

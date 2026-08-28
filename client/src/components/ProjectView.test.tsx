@@ -23,5 +23,8 @@ describe("ProjectView", () => {
     fireEvent.change(screen.getByLabelText("Prazo"), { target: { value: "2026-12-31" } });
     expect(screen.getByText(/250 por dia/)).toBeTruthy();
     expect(screen.getByText(/prazo 2026-12-31/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Criar snapshot" }));
+    expect(screen.getByText("Snapshot 1")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Restaurar" }));
   });
 });

@@ -152,7 +152,11 @@ describe("WriterStudio integrated literary assistance", () => {
     expect(await screen.findByText("Caderno revisado")).toBeTruthy();
     expect(screen.getByText("Autora QA")).toBeTruthy();
     expect(screen.getByText("ISBN 978-qa")).toBeTruthy();
-    expect(screen.getByText("Concluído")).toBeTruthy();
+    expect(screen.getAllByText("Concluído").length).toBeGreaterThan(0);
+    fireEvent.change(screen.getByRole("combobox", { name: "Filtrar por status" }), { target: { value: "completed" } });
+    expect(screen.getByText("Caderno revisado")).toBeTruthy();
+    fireEvent.change(screen.getByRole("combobox", { name: "Ordenar biblioteca" }), { target: { value: "progress" } });
+    fireEvent.change(screen.getByRole("combobox", { name: "Filtrar por status" }), { target: { value: "all" } });
 
     fireEvent.click(screen.getByRole("button", { name: "Zerar Caderno revisado" }));
     expect(screen.getByRole("heading", { name: "Zerar história?" })).toBeTruthy();
