@@ -309,3 +309,9 @@
 - [x] Verificar que `Shaksperio/Shakstory` não aparece na conta atual; criar destino privado antes do push.
 - [ ] Criar commit somente com código, documentação, schemas, dados editoriais autorizados e SQL; não incluir secrets, `node_modules` ou `dist`.
 - [ ] Enviar o commit para o repositório GitHub privado e validar o conteúdo remoto.
+
+- [x] Criar o repositório privado `Shaksperio/Shakstory-Backup`.
+- [x] Publicar o commit `8a9ffe4752356834bcc913cdac63f7d970b7e592` no branch `main`.
+- [x] Confirmar remotamente 338 caminhos, incluindo código, documentação, schema e migrações SQL.
+- [x] Confirmar que não foram publicados `.env`, `node_modules`, `dist`, `.pem` ou `.key`.
+- [x] Validar o backup remoto: https://github.com/Shaksperio/Shakstory-Backup/commit/8a9ffe4752356834bcc913cdac63f7d970b7e592
