@@ -286,3 +286,26 @@
 
 - [x] Layout Engine: adicionar cabeçalho/rodapé editoriais e regras de viúvas/órfãs ao HTML de impressão, com teste de regressão.
 - [x] Completar suporte equivalente de cabeçalho/rodapé e regras de paginação nos formatos EPUB, PDF e DOCX, com regressão de exportação; validação visual de impressão detalhada permanece recomendada.
+
+
+# Relatório técnico de estrutura — 2026-10-05
+
+- [x] Auditar a solicitação de inventário completo para desenvolvedores.
+- [x] Conferir estrutura real do repositório, stack, contratos, persistência, IA, exportação, segurança e documentação existente.
+- [ ] Consolidar o inventário em `docs/RELATORIO-ESTRUTURA-SHAKSTORY.md`.
+- [ ] Executar validação final do arquivo e registrar limitações verificáveis.
+
+- [x] Verificar o relatório: arquivo presente, 443 linhas e 18 seções técnicas.
+- [x] Executar `pnpm check`: aprovado.
+- [ ] Executar suíte integral sem bloqueio externo: 61 testes aprovados, 1 ignorado e 1 falhou em `server/github-token.credentials.test.ts` com HTTP 401; causa operacional provável: token/credencial GitHub ausente, inválido ou sem autorização para o repositório. Nenhum segredo foi exposto.
+- [ ] Reexecutar `pnpm validate:data`, `pnpm validate:repository` e `pnpm build` separadamente após a falha da suíte, pois o encadeamento parou no teste externo.
+
+
+# Backup GitHub — 2026-10-05
+
+- [x] Auditar status Git: branch `main` alinhada ao remoto interno, com `todo.md` modificado e novo relatório técnico não rastreado.
+- [x] Confirmar que as migrações e o schema SQL em `drizzle/` já fazem parte do conteúdo rastreado.
+- [x] Confirmar que a conta GitHub `Shaksperio` está autenticada.
+- [x] Verificar que `Shaksperio/Shakstory` não aparece na conta atual; criar destino privado antes do push.
+- [ ] Criar commit somente com código, documentação, schemas, dados editoriais autorizados e SQL; não incluir secrets, `node_modules` ou `dist`.
+- [ ] Enviar o commit para o repositório GitHub privado e validar o conteúdo remoto.
